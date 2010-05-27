@@ -1,0 +1,22 @@
+# last modified 21 May by Armin Monecke
+
+importFrom(lattice, densityplot, parallel)
+export(read.splsm, sempls, bootsempls, pathDiagram, plsm2sem, plsm, rSquared,
+       densityplot.sempls, densityplot.bootsempls, parallel.bootsempls,
+       exogen, endogen, reflective, formative, indicators, predecessors)
+
+S3method(print, sempls)
+S3method(coef, sempls)
+S3method(sempls, plsm)
+S3method(print, bootsempls)
+S3method(summary, bootsempls)
+S3method(print, summary.bootsempls)
+S3method(pathDiagram, sempls)
+S3method(plsm2sem, plsm)
+S3method(rSquared, sempls)
+S3method(densityplot, sempls)
+S3method(densityplot, bootsempls)
+S3method(parallel, bootsempls)
+
+
+

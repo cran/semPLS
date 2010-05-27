@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--SmartPLS model file-->
+<model>
+  <manifest datacolumn="CUEX1" visible="true" name="CUEX1" x="19" y="199" id="21521158" width="75" height="25" />
+  <manifest datacolumn="CUEX2" visible="true" name="CUEX2" x="19" y="234" id="10154161" width="75" height="25" />
+  <manifest datacolumn="CUEX3" visible="true" name="CUEX3" x="19" y="269" id="15463408" width="75" height="25" />
+  <manifest datacolumn="CUSA1" visible="true" name="CUSA1" x="671" y="310" id="22834317" width="75" height="25" />
+  <manifest datacolumn="CUSA2" visible="true" name="CUSA2" x="671" y="345" id="32685607" width="75" height="25" />
+  <manifest datacolumn="CUSA3" visible="true" name="CUSA3" x="671" y="380" id="28518282" width="75" height="25" />
+  <manifest datacolumn="CUSCO" visible="true" name="CUSCO" x="738" y="582" id="13236631" width="75" height="25" />
+  <manifest datacolumn="CUSL1" visible="true" name="CUSL1" x="649" y="133" id="17754918" width="75" height="25" />
+  <manifest datacolumn="CUSL2" visible="true" name="CUSL2" x="734" y="133" id="27449879" width="75" height="25" />
+  <manifest datacolumn="CUSL3" visible="true" name="CUSL3" x="819" y="133" id="4456558" width="75" height="25" />
+  <manifest datacolumn="IMAG1" visible="true" name="IMAG1" x="154" y="38" id="31380681" width="75" height="25" />
+  <manifest datacolumn="IMAG2" visible="true" name="IMAG2" x="239" y="38" id="25504385" width="75" height="25" />
+  <manifest datacolumn="IMAG3" visible="true" name="IMAG3" x="324" y="38" id="21722279" width="75" height="25" />
+  <manifest datacolumn="IMAG4" visible="true" name="IMAG4" x="409" y="38" id="20336075" width="75" height="25" />
+  <manifest datacolumn="IMAG5" visible="true" name="IMAG5" x="494" y="38" id="17027654" width="75" height="25" />
+  <manifest datacolumn="PERQ1" visible="true" name="PERQ1" x="21" y="378" id="1272917" width="75" height="25" />
+  <manifest datacolumn="PERQ2" visible="true" name="PERQ2" x="21" y="413" id="24835182" width="75" height="25" />
+  <manifest datacolumn="PERQ3" visible="true" name="PERQ3" x="21" y="448" id="22693155" width="75" height="25" />
+  <manifest datacolumn="PERQ4" visible="true" name="PERQ4" x="21" y="483" id="16655704" width="75" height="25" />
+  <manifest datacolumn="PERQ5" visible="true" name="PERQ5" x="21" y="518" id="8630287" width="75" height="25" />
+  <manifest datacolumn="PERQ6" visible="true" name="PERQ6" x="21" y="553" id="13778515" width="75" height="25" />
+  <manifest datacolumn="PERQ7" visible="true" name="PERQ7" x="21" y="588" id="26384885" width="75" height="25" />
+  <manifest datacolumn="PERV1" visible="true" name="PERV1" x="205" y="327" id="22041176" width="75" height="25" />
+  <manifest datacolumn="PERV2" visible="true" name="PERV2" x="205" y="362" id="13165790" width="75" height="25" />
+  <latent visible="true" name="Image" x="331" y="123" id="14651541" width="60" height="74" folded="false" alignment="TOP" />
+  <latent visible="true" name="Satisfaction" x="551" y="320" id="26179329" width="60" height="74" folded="false" alignment="RIGHT" />
+  <latent visible="true" name="Value" x="340" y="320" id="24640154" width="60" height="74" folded="false" alignment="LEFT" />
+  <latent visible="true" name="Expectation" x="154" y="209" id="13579577" width="60" height="74" folded="false" alignment="LEFT" />
+  <latent visible="true" name="Complaints" x="745" y="448" id="16164994" width="60" height="74" folded="false" alignment="BOTTOM" />
+  <latent visible="true" name="Loyalty" x="741" y="218" id="1266014" width="60" height="74" folded="false" alignment="TOP" />
+  <latent visible="true" name="Quality" x="156" y="458" id="24567316" width="60" height="74" folded="false" alignment="LEFT" />
+  <connection visible="true" source="14651541" target="21722279" />
+  <connection visible="true" source="14651541" target="17027654" />
+  <connection visible="true" source="13579577" target="26179329" />
+  <connection visible="true" source="14651541" target="1266014" />
+  <connection visible="true" source="26179329" target="32685607" />
+  <connection visible="true" source="13579577" target="15463408" />
+  <connection visible="true" source="24640154" target="13165790" />
+  <connection visible="true" source="24567316" target="24835182" />
+  <connection visible="true" source="14651541" target="25504385" />
+  <connection visible="true" source="16164994" target="13236631" />
+  <connection visible="true" source="24640154" target="22041176" />
+  <connection visible="true" source="24567316" target="26384885" />
+  <connection visible="true" source="24567316" target="13778515" />
+  <connection visible="true" source="26179329" target="22834317" />
+  <connection visible="true" source="13579577" target="24640154" />
+  <connection visible="true" source="24567316" target="26179329" />
+  <connection visible="true" source="26179329" target="16164994" />
+  <connection visible="true" source="24640154" target="26179329" />
+  <connection visible="true" source="24567316" target="8630287" />
+  <connection visible="true" source="1266014" target="4456558" />
+  <connection visible="true" source="24567316" target="22693155" />
+  <connection visible="true" source="14651541" target="26179329" />
+  <connection visible="true" source="14651541" target="31380681" />
+  <connection visible="true" source="14651541" target="20336075" />
+  <connection visible="true" source="24567316" target="24640154" />
+  <connection visible="true" source="14651541" target="13579577" />
+  <connection visible="true" source="26179329" target="28518282" />
+  <connection visible="true" source="13579577" target="24567316" />
+  <connection visible="true" source="13579577" target="21521158" />
+  <connection visible="true" source="26179329" target="1266014" />
+  <connection visible="true" source="24567316" target="1272917" />
+  <connection visible="true" source="1266014" target="27449879" />
+  <connection visible="true" source="1266014" target="17754918" />
+  <connection visible="true" source="13579577" target="10154161" />
+  <connection visible="true" source="16164994" target="1266014" />
+  <connection visible="true" source="24567316" target="16655704" />
+</model>
+
