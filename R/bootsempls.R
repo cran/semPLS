@@ -1,24 +1,8 @@
-#' @include resempls.R
-#' roxygen()
-
-#' Bootstrapped standard errors and confidence intervals for sempls objects.
-#' The code is adapted from package 'sem' by J. Fox
-#'
-#'
-##' @param sempls an object of class 'sempls'
-##' @param nboot the number of bootstrap samples to be drawn
-##' @param start a character indicating whether to restart the algorithm 'ones' or to reuse the outer weights of sempls 'old'
-##' @param bootMethod a character indicating which method to use for the bootstrap, see details
-##' @return object of class bootsempls inhariting from boot
-##' @export
-##' @callGraph
-##' @seealso \code{\link{sempls}}
-##' @examples
-##' data(mobi)
-
+# The code is adapted from package 'sem' by J. Fox
+# Uses: resempls.R
 bootsempls <- function(object, nboot=200, start=c("ones", "old"),
                 method=c("ConstructLevelChanges", "IndividualSignChanges", "Standard"),
-                verbose=TRUE, ...){
+                verbose=TRUE, strata, ...){
     method <- match.arg(method)
     if(method=="IndividualSignChanges"){
       stop("Not yet implemented.\n",
@@ -38,13 +22,17 @@ bootsempls <- function(object, nboot=200, start=c("ones", "old"),
     nErrors <- 0
     data <- object$data
     N <- nrow(data)
+    if(missing(strata)) strata <- rep(1, N)
     coefficients <- object$coefficients[,2]
     coef_names <- rownames(object$coefficients)
     coefs <- matrix(numeric(0), nrow=nboot, ncol=length(coefficients))
     attr(coefs, "path") <- object$coefficients[,1]
     colnames(coefs) <- coef_names
-    clcIndex <- NULL
+    outer_weights <- matrix(NA, nrow=nboot, ncol=ncol(data))
+    colnames(outer_weights) <- rownames(object$outer_weights)
+    clcIndices <- NULL
     tryErrorIndices <- NULL
+    bootIndices <- matrix(NA, nrow=nboot, ncol=nrow(data))
     if (verbose) cat("Resample: ")
     for (b in 1:nboot){
       if (verbose){
@@ -65,10 +53,12 @@ bootsempls <- function(object, nboot=200, start=c("ones", "old"),
         else {
           # for construct level changes
           if(method=="ConstructLevelChanges"){
-            clcIndex[[b]] <- res$clcIndex
+            clcIndices[[b]] <- res$clcIndex
           }
+          bootIndices[b,] <- indices
           # Standard
           coefs[b,] <- res$coefficients[,2]
+          outer_weights[b,] <- res$outer_weights[res$outer_weights!=0]
           break()
         }
       }
@@ -80,20 +70,18 @@ bootsempls <- function(object, nboot=200, start=c("ones", "old"),
                               nboot, " bootstrap replications returned.")
     res <- list(t0=coefficients, t=coefs, nboot=nboot, data=data, seed=seed,
                 statistic=refit, sim="ordinary", stype="i", call=match.call(),
-                tryErrorIndices=tryErrorIndices, clcIndex=clcIndex)
+                tryErrorIndices=tryErrorIndices,  clcIndices= clcIndices,
+                bootIndices=bootIndices, outer_weights=outer_weights, strata=strata)
     class(res) <- c("bootsempls", "boot")
     res
 }
 
-##' @param x object of class bootsempls
-##' @param digits number of digits to print
 
-##' @return Prints the estimate, the bias and the standard error.
 print.bootsempls <- function(x, digits = getOption("digits"), ...){
     t <- x$t
     t0 <- x$t0
-    result <- data.frame("Estimate"=t0, "Bias"=colMeans(t) - t0,
-        "Std.Error"=apply(t, 2, sd))
+    result <- data.frame("Estimate"=t0, "Bias"=colMeans(t, ...) - t0,
+        "Std.Error"=apply(t, 2, sd, ...))
     rownames(result) <- attr(t, "path")
     cat("Call: ")
     dput(x$call)
@@ -102,11 +90,7 @@ print.bootsempls <- function(x, digits = getOption("digits"), ...){
     invisible(x)
 }
 
-##' @param object an object of class sempls
-##' @param type the type of confidence interval to be computed
-##' @param level the level of the confidence interval
 
-##' @return Calculates confidence intervals for the estimates.
 summary.bootsempls <- function(object,
     type=c("perc", "bca", "norm", "basic", "none"), level=0.95, ...){
     if ((!require("boot")) && (type != "none")) stop("boot package unavailable")
@@ -123,13 +107,18 @@ summary.bootsempls <- function(object,
         up  <- if (type == "norm") 3 else 5
         noCi <- NULL
         for (i in 1:p){
-          if (boot:::const(t[,i], min(1e-08, mean(t[,i], na.rm = TRUE)/1e+06))){
+          ti <- t[!is.na(t[,i]),i] # 14.10.2010
+          #if (boot:::const(t[,i], min(1e-08, mean(t[,i], na.rm = TRUE)/1e+06))){
+          if (boot:::const(ti, min(1e-08, mean(ti, na.rm = TRUE)/1e+06))){
             lower[i] <- upper[i] <- NA
             noCi <- append(noCi, i)
           }
           else{
-            ci <- as.vector(boot.ci(object, type=type, index=i,
-                conf=level)[[type, exact=FALSE]])
+            ci <- try(as.vector(boot.ci(object, type=type, index=i,
+                      conf=level)[[type, exact=FALSE]]))
+            if(inherits(ci, "try-error") && type=="bca"){
+                stop("Try to set 'nboot' to the number of observations!\n")
+            }
             lower[i] <- ci[low]
             upper[i] <- ci[up]
             }
@@ -144,10 +133,7 @@ summary.bootsempls <- function(object,
     result
 }
 
-##' @param x object of summaryBootsempls
-##' @param digits number ot digits to print
 
-##' @return Prints the estimate, the bias, the standard error and confidence interval
 print.summary.bootsempls <- function(x, digits = getOption("digits"), ...){
     cat("Call: ")
     dput(x$call)

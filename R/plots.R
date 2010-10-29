@@ -1,6 +1,50 @@
-# lattice:::densityplot
-densityplot.sempls <- function(x, data, use=c("fscores", "prediction", "residuals"),
-                               main, sub, ...){
+plot.sempls <- function(x, ...){
+    col <- list(...)$col
+    #if(is.null(col) && require(colorspace)){
+    #    for(i in 0:(length(x$model$latent)-1)){
+    #        n <- sapply(x$model$blocks, length)
+    #        col_tmp <- rainbow_hcl(n[i+1], start = 90+(i*777), end = -30+(i*777))
+    #        col <- append(col, col_tmp)
+    #    }
+    #}
+    if(!is.null(col)){
+        old_col <- trellis.par.get("superpose.line")$col
+        trellis.par.set(superpose.line=list(col=col))
+    }
+    MVs <- NULL
+    wghtev <- x$weights_evolution[!x$weights_evolution$weights %in% c(0, NA),]
+    #ymin <- min(x$weights_evolution$iteration)
+    #ymax <- max(x$weights_evolution$iteration)
+    print(xyplot(weights ~ iteration | LVs,
+                   groups=MVs, type="a",
+                   data=wghtev,
+                   as.table=TRUE,
+                   auto.key=list(lines=TRUE,
+                                 points=FALSE, # new
+                                 space="right",
+                                 title="MVs",
+                                 ...),
+                   main="Evolution of Outer Weights",
+                   xlab="Iteration",
+                   ylab="Outer Weights",
+                   #ylim=ymin:ymax,
+                   ...))
+    if(!is.null(col)){
+        trellis.par.set(superpose.line=list(col=old_col))
+    }
+    invisible(wghtev)
+}
+
+### Alternatives:
+#xyplot(weights ~ iteration|LVs, data=tmp2, groups=MVs, type = "a", auto.key =list(space = "right", points = FALSE, lines = TRUE), ylim=range(weights))
+#tmp <- tmp[tmp$weights!=0,]
+#tmp4$LVs <- factor(tmp4$LVs, levels=ecsi$model$latent)
+#xyplot(weights ~ iteration|LVs, data=tmp4, groups=MVs, as.table=TRUE, type="b", auto.key =list(space = "rig#ht", points = FALSE, lines = TRUE))
+#xyplot(weights ~ iteration, data=tmp4, groups=MVs, as.table=TRUE, type="l", col=1)
+
+
+### lattice:::densityplot
+densityplot.sempls <- function(x, data, use=c("fscores", "prediction", "residuals"), ...){
     use <- match.arg(use)
     if(use=="fscores")         val <- x$factor_scores
     else if(use=="prediction") val <- predict(x)
@@ -13,11 +57,19 @@ densityplot.sempls <- function(x, data, use=c("fscores", "prediction", "residual
         tmp <- data.frame(value=val[,i], name=i)
         Y <- rbind(Y, tmp)
     }
-    if(missing(main)) main=paste(deparse(substitute(x)), "\n", ifelse(use=="fscores", "factor scores", use))
-    if(missing(sub)){
-        sub=paste("Exogenous LVs:\n", paste(exogenous, collapse=", "))
+    Y$name <- factor(Y$name, levels=x$model$latent)
+    #dots <- list(...)
+    if(is.null(list(...)$main)){
+        main=paste(deparse(substitute(x)), "\n",
+                  ifelse(use=="fscores", "factor scores", use))
+    }
+    if(is.null(list(...)$sub)){
+        sub=paste("Exogenous LVs: ", paste(exogenous, collapse=", "))
     }
     densityplot(~value|name, data=Y, main=main, sub=sub, as.table=TRUE, ...)
+    #densityplot(~value|name, data=Y, main=main, sub=sub, as.table=TRUE,
+    #            font.sub=1, cex.font=0.5,...)
+
  }
 
 densityplot.bootsempls <- function(x, data, pattern="beta", subset=NULL, ...){
@@ -51,4 +103,34 @@ parallel.bootsempls <- function(x, data, pattern="beta", subset=NULL, reflinesAt
     }
     else Y <- data.frame(Y, origin=c(rep("1resample", x$nboot), "2sample", "3ci", "3ci"))
     parallel(~Y[ind], data=Y, groups=origin, common.scale=TRUE, col=col, lty=lty, ...)
+    #parallel(~Y[ind], data=Y, groups=origin, col=col, lty=lty, ...)
  }
+
+mvplot <- function(model, ...){
+  UseMethod("mvplot", model)
+}
+
+mvplot.plsm <- function(model, data, ask=TRUE, ...){
+    try(data <- data[, model$manifest], silent=TRUE)
+    if(inherits(data, "try-error")) stop("The 'models' manifest variables must be contained in 'data'!")
+
+    long <- reshape(data, v.names="value",  ids=rownames(data), idvar="ids",
+                    times=names(data), timevar="MV", varying=list(names(data) ),
+                    direction="long")
+    opar <- par(no.readonly=TRUE)
+    on.exit(par(opar))
+    par(ask=ask)
+    charts <- list()
+    for(i in model$latent){
+        tab <- as.data.frame(xtabs(~ value + MV ,
+                                   data=long[long$MV %in% model$block[[i]],]))
+        charts[[i]] <- barchart(Freq ~ value| MV, data=tab, main=i, ...)
+        print(charts[[i]])
+    }
+    invisible(charts)
+}
+
+
+
+
+

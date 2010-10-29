@@ -7,7 +7,7 @@ data(ECSImobi)
 
 # scheme: centroid
 # Results match with those from SmartPLS (Version: 2.0.M3)
-ecsi <- sempls(ECSImobi, mobi, E="A")
+ecsi <- sempls(ECSImobi, mobi, E="A", sum1=TRUE)
 
 # Import SmartPLS results
 ecsiSmart <- list()
@@ -41,9 +41,9 @@ stopifnot(all.equal(ecsi$cross_loadings, ecsiSmart$crossL))
 
 
 
-# scheme: centroid
+# scheme: factorial
 # Results match with those from SmartPLS (Version: 2.0.M3)
-ecsi <- sempls(ECSImobi, mobi, E="B")
+ecsi <- sempls(ECSImobi, mobi, E="B", sum1=TRUE)
 
 # Import SmartPLS results
 ecsiSmart <- list()
@@ -78,7 +78,7 @@ stopifnot(all.equal(ecsi$cross_loadings, ecsiSmart$crossL))
 
 # scheme: path weighting
 # Results match with those from SmartPLS (Version: 2.0.M3)
-ecsi <- sempls(ECSImobi, mobi, E="C")
+ecsi <- sempls(ECSImobi, mobi, E="C", , sum1=TRUE)
 
 # Import SmartPLS results
 ecsiSmart <- list()

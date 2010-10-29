@@ -4,7 +4,7 @@ sempls <- function(model, ...){
 }
 
 sempls.plsm <-
-function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=TRUE, E="A", pairwise=FALSE,
+function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwise=FALSE,
          method=c("pearson", "kendall", "spearman"),
          convCrit=c("relative", "square"), ...){
   method <- match.arg(method)
@@ -13,9 +13,10 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=TRUE, E="A", pairwis
                  outer_loadings=NULL ,cross_loadings=NULL,
                  total_effects=NULL,inner_weights=NULL, outer_weights=NULL,
                  blocks=NULL, factor_scores=NULL, data=NULL, scaled=scaled,
-                 model=model, weighting_scheme=NULL, sum1=sum1, pairwise=pairwise,
-                 method=method, iterations=NULL, convCrit=convCrit,
-                 tolerance=tol, maxit=maxit, N=NULL, incomplete=NULL)
+                 model=model, weighting_scheme=NULL, weights_evolution=NULL,
+                 sum1=sum1, pairwise=pairwise, method=method, iterations=NULL,
+                 convCrit=convCrit, tolerance=tol, maxit=maxit, N=NULL,
+                 incomplete=NULL)
   class(result) <- "sempls"
 
   # checking the data
@@ -57,9 +58,24 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=TRUE, E="A", pairwis
 
   #############################################
   # step 1: Initialisation
-  stp1 <- step1(model, data, sum1=sum1, pairwise)
+  stp1 <- step1(model, data, sum1=sum1, pairwise, method)
   factor_scores <- stp1$latent
-  Wold <- stp1$outerW
+  if(!sum1){
+      # to ensure: w'Sw=1
+      sdYs <- rep(attr(factor_scores, "scaled:scale"),
+                  each=length(model$manifest))
+      Wold <- stp1$outerW / sdYs
+  }
+  else Wold <- stp1$outerW
+  weights_evolution <- reshape(as.data.frame(Wold),
+                               v.names="weights",
+                               ids=rownames(Wold),
+                               idvar="MVs",
+                               times=colnames(Wold),
+                               timevar="LVs",
+                               varying=list(colnames(Wold)),
+                               direction="long")
+  weights_evolution <- cbind(weights_evolution, iteration=0)
 
   #############################################
   # Select the function according to the weighting scheme
@@ -91,7 +107,11 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=TRUE, E="A", pairwis
       if (E=="B") cat("Scheme: factorial\n")
       if (E=="C") cat("Scheme: path weighting\n")
   }
+  else cat(paste("Result did not converge after ", result$maxit, " iterations.\n",
+                 "\nIncrease 'maxit' and rerun.", sep=""))
 
+  weights_evolution <- weights_evolution[weights_evolution!=0,]
+  weights_evolution$LVs <- factor(weights_evolution$LVs,  levels=model$latent)
   # create result list
   ifelse(pairwise, use <- "pairwise.complete.obs", use <- "everything")
   result$path_coefficients <- pathCoeff(model=model, factor_scores, method, pairwise)
@@ -101,6 +121,7 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=TRUE, E="A", pairwis
   result$total_effects <- totalEffects(result$path_coefficients)
   result$inner_weights <- innerWeights
   result$outer_weights <- Wnew
+  result$weights_evolution <- weights_evolution
   result$factor_scores <- factor_scores
   result$data <- data
   result$N <- N
@@ -125,17 +146,32 @@ plsLoop <- expression({
     #############################################
     # step 2
     innerWeights <- innerWe(model, fscores=factor_scores, pairwise, method)
-    factor_scores <- step2(Latent=factor_scores, innerWeights, blocks=model$blocks, pairwise)
+    factor_scores <- step2(Latent=factor_scores, innerWeights, model, pairwise)
 
     #############################################
     # step 3
-    Wnew <-  outerApprx(Latent=factor_scores, data, blocks=model$blocks,
+    Wnew <-  outerApprx(Latent=factor_scores, data, model,
                         sum1=sum1, pairwise, method)
 
     #############################################
     # step 4
-    factor_scores <- step4(data, outerW=Wnew, blocks=model$blocks, pairwise)
-
+    factor_scores <- step4(data, outerW=Wnew, model, pairwise)
+    if(!sum1){
+      # to ensure: w'Sw=1
+      sdYs <- rep(attr(factor_scores, "scaled:scale"),
+                  each=length(model$manifest))
+      Wnew <- Wnew / sdYs
+    }
+    weights_evolution_tmp <- reshape(as.data.frame(Wnew),
+                                     v.names="weights",
+                                     ids=rownames(Wnew),
+                                     idvar="MVs",
+                                     times=colnames(Wnew),
+                                     timevar="LVs",
+                                     varying=list(colnames(Wnew)),
+                                     direction="long")
+    weights_evolution_tmp <- cbind(weights_evolution_tmp, iteration=i)
+    weights_evolution <- rbind(weights_evolution, weights_evolution_tmp)
 
     #############################################
     # step 5
@@ -149,6 +185,7 @@ plsLoop <- expression({
     if(i == maxit && !converged){
       # 'try-error' especially for resempls.R
       class(result) <- c(class(result), "try-error")
+      i <- i+1
       break
     }
 

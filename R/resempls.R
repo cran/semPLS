@@ -22,13 +22,24 @@ function(sempls, data, start=c("ones", "old"), method, ...){
   if(start=="old"){
     factor_scores <- sempls$factor_scores
     Wold <- sempls$outer_weights
+    i <- sempls$iterations
+    index <- sempls$weights_evolution$iteration==i
+    weights_evolution <- sempls$weights_evolution[index,]
   }
   else if(start=="ones"){
     # Weights not adding up to 1 (14.08.2009)
     # changed (30.03.2010)
-    stp1 <- step1(model, data, sum1=sum1, pairwise)
+    stp1 <- step1(model, data, sum1=sum1, pairwise, method)
     factor_scores <- stp1$latent
-    Wold <- stp1$outerW
+    if(!sum1){
+      # to ensure: w'Sw=1
+      sdYs <- rep(attr(factor_scores, "scaled:scale"),
+                  each=length(model$manifest))
+      Wold <- stp1$outerW / sdYs
+    }
+    else Wold <- stp1$outerW
+    index <- sempls$weights_evolution$iteration==0
+    weights_evolution <- sempls$weights_evolution[index,]
   }
 
   #############################################
@@ -41,11 +52,12 @@ function(sempls, data, start=c("ones", "old"), method, ...){
   i <- c()
   eval(plsLoop)
 
+  ifelse(pairwise, use <- "pairwise.complete.obs", use <- "everything")
   ### bootstrap method ##################################################
   # Construct level changes
   clcIndex <- NULL
   if(bootMethod=="ConstructLevelChanges"){
-    result$cross_loadings <- cor(data, factor_scores)
+    result$cross_loadings <- cor(data, factor_scores, use=use, method=method)
     result$outer_loadings <- result$cross_loadings
     result$outer_loadings[Wnew==0] <- 0
     clcIndex <- which(abs(colSums(sempls$outer_loadings - result$outer_loadings)) >
@@ -54,17 +66,23 @@ function(sempls, data, start=c("ones", "old"), method, ...){
     Wnew[, clcIndex] <- ifelse(sum1, -apply(as.matrix(Wnew[, clcIndex]), 2, sum1),
                                      -Wnew[, clcIndex])
     # repeat step4
-    factor_scores <- step4(data, outerW=Wnew, blocks=model$blocks, pairwise)
+    factor_scores <- step4(data, outerW=Wnew, model, pairwise)
+    if(!sum1){
+      # to ensure: w'Sw=1
+      sdYs <- rep(attr(factor_scores, "scaled:scale"),
+                  each=length(model$manifest))
+      Wnew <- Wnew / sdYs
+    }
   }
   #######################################################################
-
-  result$cross_loadings <- cor(data, factor_scores)
+  result$cross_loadings <- cor(data, factor_scores, use=use, method=method)
   result$outer_loadings <- result$cross_loadings
   result$outer_loadings[Wnew==0] <- 0
   result$path_coefficients <- pathCoeff(model=model, factor_scores, method, pairwise)
   result$total_effects <- totalEffects(result$path_coefficients)
   result$inner_weights <- innerW
   result$outer_weights <- Wnew
+  result$weights_evolution <- weights_evolution
   result$factor_scores <- factor_scores
   result$data <- data
   result$iterations <- (i-1)

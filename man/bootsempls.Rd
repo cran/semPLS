@@ -14,7 +14,7 @@ the \code{\link{sempls}} method).
 \usage{
 bootsempls(object, nboot=200, start=c("ones", "old"), method=
             c("ConstructLevelChanges", "IndividualSignChanges",
-            "Standard"), verbose=TRUE, \ldots)
+            "Standard"), verbose=TRUE, strata, \ldots)
 
 \method{print}{bootsempls}(x, digits=getOption("digits"), \ldots)
 
@@ -65,6 +65,9 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
   \item{type}{Type of bootstrapped confidence intervals to compute; the
     default is \code{"perc"} (percentile); see
     \code{\link[boot]{boot.ci}} for details.}
+  \item{strata}{An integer vector or factor specifying the strata for
+    multi-sample problems. If the argument is not provided, all data is
+    assumed to come from the same sample. For details, see \code{\link[boot]{boot.ci}}}
   \item{level}{Level for confidence intervals; default is \code{0.95}.}
   \item{\ldots}{Arguments to be passed down to other methods.}
     \item{data}{The \code{data} is not used because the \code{bootsempls}
@@ -109,9 +112,15 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
   \item{call}{the call of the \code{boot.sem} function.}
   \item{tryErrorIndices}{Contains the indices for each resample, which
   returned \code{try-error}.}
-  \item{clcIndex}{When the method \code{ConstructLevelChanges} is used,
+  \item{clcIndices}{When the method \code{ConstructLevelChanges} is used,
   it stores the indices of the blocks of MVs for which a sign change
   occured.}
+  \item{bootIndices}{A matrix containing the indices of the converged
+    bootstrap samples as rows.}
+  \item{outer_weights}{A martrix containing, as rows, the outer weights
+  for each bootsrap sample.}
+  \item{strata}{The strata used. This is the vector passed to boot, if
+    it was supplied or a vector of ones if there were no strata.}
 }
 
 \author{
@@ -122,7 +131,7 @@ Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 
 \references{
   Tenenhaus, M., V. E. Vinzi, Y.-M. Chatelin, and C. Lauro (2005)
-  PLS path modeling. Computational Statistics \& Data Analysis 48,
+  PLS path modeling. Computational Statistics & Data Analysis 48,
   159-205.
 }
 

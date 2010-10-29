@@ -13,6 +13,10 @@ function(model, fscores, pairwise, method){
   innerW <- E
   for (i in latent){
     if(length(pred[[i]])==0) next
+    else if (length(pred[[i]])==1){
+        innerW[pred[[i]], i] <- cor(fscores[,pred[[i]]], fscores[,i],
+                                    use=use, method=method)
+    }
     innerW[pred[[i]], i] <- solve(cor(as.matrix(fscores[,pred[[i]]])
                                       , use=use, method=method)) %*%
                                   cor(fscores[,pred[[i]]], fscores[,i], use=use, method=method)

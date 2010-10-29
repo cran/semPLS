@@ -1,20 +1,20 @@
 # Inner estimation of factor scores
 step2 <-
-function(Latent, innerW, blocks, pairwise){
+function(Latent, innerW, model, pairwise){
+  blocks <- model$blocks
   if(pairwise){
-    fscores <- NULL
-    latent <- names(blocks)
-    for(i in 1:length(latent)){    
+    fscores <- matrix(NA, nrow=nrow(Latent), ncol=ncol(Latent))
+    colnames(fscores) <- model$latent
+    for(i in model$latent){
       con <- which(innerW[,i]!=0)
-      fscores <- cbind(fscores, as.matrix(Latent[,con]) %*%
-                                as.matrix(innerW[con,i]))
+      fscores[,i] <- as.matrix(Latent[,con]) %*%
+                     as.matrix(innerW[con,i])
     }
-    colnames(fscores) <- latent
     Latent <- scale(fscores)
   }
   else {Latent <- scale(Latent %*% innerW)}
   # the attributes for the scale are meaningless
-  attributes(Latent)[c(3,4)] <- NULL  
+  attributes(Latent)[c(3,4)] <- NULL
   return(Latent)
 }
 
