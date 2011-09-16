@@ -1,6 +1,9 @@
 \name{mobi}
 \Rdversion{1.1}
 \alias{mobi}
+\alias{ECSImobi}
+\alias{ECSImm}
+\alias{ECSIsm}
 \docType{data}
 \title{
   Measurement Instrument for the Mobile Phone Industry
@@ -13,9 +16,20 @@
 \usage{
 data(mobi)
 data(ECSImobi)
+data(ECSImm)
+data(ECSIsm)
 }
+
+\details{
+  The data frame \code{mobi} contains the observed data for the model
+  specified by \code{ECSImobi}.
+  The from-to-matrizes \code{ECSImm} and code{ECSIsm} represent directed edges connecting the
+  variables in outer/measurement and inner/structural model. They are
+  needed for model specification by mean of the \code{plsm} method.
+}
+
 \format{
-  A data frame with 250 observations on the following 24 items. All the
+  The data frame \code{mobi} has 250 observations on the following 24 items. All the
   items are scaled from \eqn{1} to \eqn{10}.
   \describe{
     \item{\code{CUEX1}}{Expectations for the overall quality of \dQuote{your mobile phone provider} at the moment you became customer of this provider}
@@ -49,7 +63,7 @@ data(ECSImobi)
 \references{
   Tenenhaus, M., V. E. Vinzi, Y.-M. Chatelin, and C. Lauro (2005)
   PLS path modeling.
-  Computational Statistics \& Data Analysis 48, 159-205.
+  Computational Statistics & Data Analysis 48, 159-205.
 }
 
 \author{

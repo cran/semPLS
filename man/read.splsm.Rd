@@ -5,8 +5,12 @@
 \title{
   Import of XML Model Description Specified in SmartPLS
 }
-\description{Imports a .splsm file, an XML model description,
-  specified in SmartPLS (see references).}
+\description{
+  Imports a .splsm file, an XML model description,
+  specified in SmartPLS (see references). Note, that moderator effects
+  specified within SmartPLS are not yet supported. Nevertheless
+  moderating effects can be specified manually.
+}
 
 \usage{
 read.splsm(file=character(), order=c("generic", "alphabetical"))
@@ -49,8 +53,13 @@ The object returned is of class \code{splsm} with the elements:
   the measurement model.}
 \item{D}{The adjacency matrix \eqn{\bm{D}} for the structural model.}
 \item{M}{The adjacency matrix \eqn{\bm{M}} for the measurement model.}
-\item{blocks}{A \code{list} naming the MVs belonging to each LV's block
-  and telling their measurement mode.}
+\item{blocks}{
+  A \code{list} naming the MVs belonging to each LV's block
+  and telling their measurement mode.
+}
+\item{order}{
+    See armguments section.
+  }
 }
 
 \references{

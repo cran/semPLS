@@ -2,13 +2,16 @@ mvpairs <- function(model, ...){
   UseMethod("mvpairs", model)
 }
 
-mvpairs.plsm <- function(model, data, ask=TRUE, ...){
+mvpairs.plsm <- function(model, data, LVs, ask=TRUE, ...){
     opar <- par(no.readonly=TRUE)
     on.exit(par(opar))
     par(ask=ask)
     MVblocks <- vector(mode="list", length=length(model$latent))
     names(MVblocks) <- model$latent
-    for(i in model$latent){
+    if(missing(LVs)) indx <- model$latent
+    else indx <- LVs
+    if(length(indx)==1) par(ask=FALSE)
+    for(i in indx){
         if(length(model$blocks[[i]])==1){
             MVblocks[[i]] <- data[,model$blocks[[i]]]
             next

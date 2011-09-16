@@ -87,6 +87,7 @@ pathDiagram(ecsi, file="ecsiPLS1", edge.labels="both",
             output.type="graphics", digits=3, graphics.fmt = "pdf")
 
 # include R-squared values
+rSquared <- rSquared(ecsi)
 pathDiagram(ecsi, file="ecsiPLS2", edge.labels="both",
             output.type="graphics", digits=3, graphics.fmt = "pdf",
             rSquared=Rsquared)

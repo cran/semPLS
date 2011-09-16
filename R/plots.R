@@ -39,7 +39,7 @@ plot.sempls <- function(x, ...){
 #xyplot(weights ~ iteration|LVs, data=tmp2, groups=MVs, type = "a", auto.key =list(space = "right", points = FALSE, lines = TRUE), ylim=range(weights))
 #tmp <- tmp[tmp$weights!=0,]
 #tmp4$LVs <- factor(tmp4$LVs, levels=ecsi$model$latent)
-#xyplot(weights ~ iteration|LVs, data=tmp4, groups=MVs, as.table=TRUE, type="b", auto.key =list(space = "rig#ht", points = FALSE, lines = TRUE))
+#xyplot(weights ~ iteration|LVs, data=tmp4, groups=MVs, as.table=TRUE, type="b", auto.key =list(space = "right", points = FALSE, lines = TRUE))
 #xyplot(weights ~ iteration, data=tmp4, groups=MVs, as.table=TRUE, type="l", col=1)
 
 
@@ -51,7 +51,7 @@ densityplot.sempls <- function(x, data, use=c("fscores", "prediction", "residual
     else if(use=="residuals")  val <- residuals(x)
 
     Y <- data.frame(NULL)
-    exogenous <- exogen(x$model)
+    exogenous <- exogenous(x$model)
     for(i in x$model$latent){
         if(i %in% exogenous & use!="fscores") next
         tmp <- data.frame(value=val[,i], name=i)
@@ -110,7 +110,7 @@ mvplot <- function(model, ...){
   UseMethod("mvplot", model)
 }
 
-mvplot.plsm <- function(model, data, ask=TRUE, ...){
+mvplot.plsm <- function(model, data, LVs, ask=TRUE, ...){
     try(data <- data[, model$manifest], silent=TRUE)
     if(inherits(data, "try-error")) stop("The 'models' manifest variables must be contained in 'data'!")
 
@@ -120,8 +120,11 @@ mvplot.plsm <- function(model, data, ask=TRUE, ...){
     opar <- par(no.readonly=TRUE)
     on.exit(par(opar))
     par(ask=ask)
+    if(missing(LVs)) indx <- model$latent
+    else indx <- LVs
+    if(length(indx)==1) par(ask=FALSE)
     charts <- list()
-    for(i in model$latent){
+    for(i in indx){
         tab <- as.data.frame(xtabs(~ value + MV ,
                                    data=long[long$MV %in% model$block[[i]],]))
         charts[[i]] <- barchart(Freq ~ value| MV, data=tab, main=i, ...)
@@ -129,8 +132,4 @@ mvplot.plsm <- function(model, data, ask=TRUE, ...){
     }
     invisible(charts)
 }
-
-
-
-
 

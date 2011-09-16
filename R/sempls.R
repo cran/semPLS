@@ -4,9 +4,9 @@ sempls <- function(model, ...){
 }
 
 sempls.plsm <-
-function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwise=FALSE,
+function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, wscheme="centroid", pairwise=FALSE,
          method=c("pearson", "kendall", "spearman"),
-         convCrit=c("relative", "square"), ...){
+         convCrit=c("relative", "square"), verbose=TRUE, ...){
   method <- match.arg(method)
   convCrit <- match.arg(convCrit)
   result <- list(coefficients=NULL, path_coefficients=NULL,
@@ -15,29 +15,29 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwi
                  blocks=NULL, factor_scores=NULL, data=NULL, scaled=scaled,
                  model=model, weighting_scheme=NULL, weights_evolution=NULL,
                  sum1=sum1, pairwise=pairwise, method=method, iterations=NULL,
-                 convCrit=convCrit, tolerance=tol, maxit=maxit, N=NULL,
-                 incomplete=NULL)
+                 convCrit=convCrit, verbose=verbose, tolerance=tol, maxit=maxit, N=NULL,
+                 incomplete=NULL, Hanafi=NULL)
   class(result) <- "sempls"
 
   # checking the data
   data <- data[, model$manifest]
   N <- nrow(data)
   missings <- which(complete.cases(data)==FALSE)
-  if(length(missings)==0){
+  if(length(missings)==0 & verbose){
     cat("All", N ,"observations are valid.\n")
     if(pairwise){
       pairwise <- FALSE
       cat("Argument 'pairwise' is reset to FALSE.\n")
     }
   }
-  else if(length(missings)!=0 & !pairwise){
+  else if(length(missings)!=0 & !pairwise & verbose){
     # Just keeping the observations, that are complete.
     data <- na.omit(data[, model$manifest])
     cat("Data rows:", paste(missings, collapse=", "),
         "\nare not taken into acount, due to missings in the manifest variables.\n",
         "Total number of complete cases:", N-length(missings), "\n")
   }
-  else{
+  else if(verbose){
      cat("Data rows", paste(missings, collapse=", "),
          " contain missing values.\n",
          "Total number of complete cases:", N-length(missings), "\n")
@@ -76,18 +76,22 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwi
                                varying=list(colnames(Wold)),
                                direction="long")
   weights_evolution <- cbind(weights_evolution, iteration=0)
+  Hanafi <- cbind(f=sum(abs(cor(factor_scores)) * model$D),
+                  g=sum(cor(factor_scores)^2 * model$D),
+                  iteration=0)
+
 
   #############################################
   # Select the function according to the weighting scheme
-  if(E=="A") {
+  if(wscheme %in% c("A", "centroid")) {
     innerWe <- centroid
     result$weighting_scheme <- "centroid"
   }
-  else if(E=="B") {
+  else if(wscheme %in% c("B", "factorial")) {
     innerWe <- factorial
     result$weighting_scheme <- "factorial"
   }
-  else if(E=="C") {
+  else if(wscheme %in% c("C", "pw", "pathWeighting")) {
     innerWe <- pathWeighting
     result$weighting_scheme <- "path weighting"
   }
@@ -100,15 +104,17 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwi
   eval(plsLoop)
 
   ## print
-  if(converged){
+  if(converged & verbose){
       cat(paste("Converged after ", (i-1), " iterations.\n",
                 "Tolerance: ", tol ,"\n", sep=""))
-      if (E=="A") cat("Scheme: centroid\n")
-      if (E=="B") cat("Scheme: factorial\n")
-      if (E=="C") cat("Scheme: path weighting\n")
+      if (wscheme %in% c("A", "centroid")) cat("Scheme: centroid\n")
+      if (wscheme %in% c("B", "factorial")) cat("Scheme: factorial\n")
+      if (wscheme %in% c("C", "pw", "pathWeighting")) cat("Scheme: path weighting\n")
   }
-  else cat(paste("Result did not converge after ", result$maxit, " iterations.\n",
-                 "\nIncrease 'maxit' and rerun.", sep=""))
+  else if(!converged){
+      stop("Result did not converge after ", result$maxit, " iterations.\n",
+           "\nIncrease 'maxit' and rerun.", sep="")
+  }
 
   weights_evolution <- weights_evolution[weights_evolution!=0,]
   weights_evolution$LVs <- factor(weights_evolution$LVs,  levels=model$latent)
@@ -122,6 +128,7 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwi
   result$inner_weights <- innerWeights
   result$outer_weights <- Wnew
   result$weights_evolution <- weights_evolution
+  result$Hanafi<- Hanafi
   result$factor_scores <- factor_scores
   result$data <- data
   result$N <- N
@@ -129,11 +136,6 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, E="A", pairwi
   result$iterations <- (i-1)
   result$coefficients <- coefficients(result)
   return(result)
-}
-
-print.sempls <- function(x, ...){
-  print(x$coefficients)
-  invisible(x)
 }
 
 plsLoop <- expression({
@@ -150,7 +152,7 @@ plsLoop <- expression({
 
     #############################################
     # step 3
-    Wnew <-  outerApprx(Latent=factor_scores, data, model,
+    Wnew <-  outerApprx2(Latent=factor_scores, data, model,
                         sum1=sum1, pairwise, method)
 
     #############################################
@@ -172,6 +174,10 @@ plsLoop <- expression({
                                      direction="long")
     weights_evolution_tmp <- cbind(weights_evolution_tmp, iteration=i)
     weights_evolution <- rbind(weights_evolution, weights_evolution_tmp)
+    Hanafi_tmp <- cbind(f=sum(abs(cor(factor_scores)) * model$D),
+                         g=sum(cor(factor_scores)^2 * model$D),
+                         iteration=i)
+    Hanafi <- rbind(Hanafi, Hanafi_tmp)
 
     #############################################
     # step 5
@@ -192,3 +198,9 @@ plsLoop <- expression({
     i <- i+1
   }
 })
+
+# print method
+print.sempls <- function(x, digits=2, ...){
+  print(x$coefficients, digits=digits, ...)
+  invisible(x)
+}

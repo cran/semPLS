@@ -25,6 +25,7 @@ function(sempls, data, start=c("ones", "old"), method, ...){
     i <- sempls$iterations
     index <- sempls$weights_evolution$iteration==i
     weights_evolution <- sempls$weights_evolution[index,]
+    Hanafi <- sempls$Hanafi[i+1,] # Values of the last iteration
   }
   else if(start=="ones"){
     # Weights not adding up to 1 (14.08.2009)
@@ -40,6 +41,7 @@ function(sempls, data, start=c("ones", "old"), method, ...){
     else Wold <- stp1$outerW
     index <- sempls$weights_evolution$iteration==0
     weights_evolution <- sempls$weights_evolution[index,]
+    Hanafi <- sempls$Hanafi[1,] # iteration==0
   }
 
   #############################################

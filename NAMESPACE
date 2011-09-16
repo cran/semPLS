@@ -1,14 +1,24 @@
-# last modified 27 October 2010 by Armin Monecke
+# last modified 12 September 2011 by Armin Monecke
 
 importFrom(lattice, densityplot, parallel, barchart)
 export(read.splsm, sempls, bootsempls, pathDiagram, plsm2sem, plsm, rSquared,
        densityplot.sempls, densityplot.bootsempls, parallel.bootsempls,
-       exogen, endogen, reflective, formative, indicators, predecessors,
-       mvplot, mvpairs)
+       mvplot, mvpairs, pathCoeff, totalEffects, plsWeights, plsLoadings,
+       plsmEdit, addPath, removePath, addMVs, removeMVs, invertLVs, addLV, removeLVs,
+       exogenous, endogenous, reflective, formative, indicators, predecessors, successors,
+       qSquared, dgrho, comunality, redundancy, rSquared2, gof)
 
 S3method(print, sempls)
 S3method(plot, sempls)
 S3method(coef, sempls)
+S3method(pathCoeff, sempls)
+S3method(print, pathCoeff)
+S3method(totalEffects, sempls)
+S3method(print, totalEffects)
+S3method(plsWeights, sempls)
+S3method(print, plsWeights)
+S3method(plsLoadings, sempls)
+S3method(print, plsLoadings)
 S3method(sempls, plsm)
 S3method(print, bootsempls)
 S3method(summary, bootsempls)
@@ -21,6 +31,29 @@ S3method(densityplot, bootsempls)
 S3method(parallel, bootsempls)
 S3method(mvplot, plsm)
 S3method(mvpairs, plsm)
+S3method(plsmEdit, plsm)
+S3method(addPath, plsm)
+S3method(removePath, plsm)
+S3method(addMVs, plsm)
+S3method(removeMVs, plsm)
+S3method(invertLVs, plsm)
+S3method(addLV, plsm)
+S3method(removeLVs, plsm)
+S3method(rSquared, sempls)
+S3method(print, rSquared)
+S3method(rSquared2, sempls)
+S3method(print, rSquared2)
+S3method(qSquared, sempls)
+S3method(print, qSquared)
+S3method(dgrho, sempls)
+S3method(print, dgrho)
+S3method(comunality, sempls)
+S3method(print, comunality)
+S3method(redundancy, sempls)
+S3method(print, redundancy)
+S3method(gof, sempls)
+S3method(print, gof)
+
 
 
 

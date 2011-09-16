@@ -1,5 +1,10 @@
+pathCoeff <- function(object, ...){
+  UseMethod("pathCoeff", object)
+}
+
+
 # Calculates the matrix of path coefficients.
-pathCoeff <- function(model, factor_scores, method, pairwise){
+pathCoeff.default <- function(model, factor_scores, method, pairwise, ...){
   ifelse(pairwise, use <- "pairwise.complete.obs", use <- "everything")
   latent <- model$latent             # names of latent variables
   strucmod <- model$strucmod         # names of manifest variables
@@ -16,9 +21,26 @@ pathCoeff <- function(model, factor_scores, method, pairwise){
       indpnt <- strucmod[index,1] # the independent LVs
 
       # solving the structural equation for latent[i]
-      pC[indpnt, i] <- solve(cor(as.matrix(fscores[,indpnt]), use=use, method=method)) %*%
-                       cor(fscores[,indpnt], fscores[,i], use=use, method=method)
+      #pC[indpnt, i] <- solve(cor(as.matrix(fscores[,indpnt]), use=use, method=method)) %*%
+      #                 cor(fscores[,indpnt], fscores[,i], use=use, method=method)
+      pC[indpnt, i] <- solve(cor(fscores[,indpnt, drop=FALSE], use=use, method=method),
+                       cor(fscores[,indpnt], fscores[,i], use=use, method=method))
     }
   }
   return(pC)
 }
+
+pathCoeff.sempls <- function(object, ...){
+  coeffs <- object$path_coefficients
+  class(coeffs) <- "pathCoeff"
+  return(coeffs)
+}
+
+print.pathCoeff <- function(x, na.print=".", digits=2, abbreviate=FALSE, ...){
+  pathCoeff <- x
+  pathCoeff[pathCoeff==0] <- NA
+  if(abbreviate) dimnames(pathCoeff) <- lapply(dimnames(pathCoeff), abbreviate, ...)
+  print.table(pathCoeff, na.print=na.print, digits=digits, ...)
+  invisible(x)
+}
+  

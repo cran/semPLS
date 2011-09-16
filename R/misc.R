@@ -1,11 +1,11 @@
 # for object of class: plsm
-exogen <- function(model){
+exogenous <- function(model){
     if(!inherits(model, "plsm")) stop("Model must be of class 'plsm'!")
     ret <- names(which(colSums(model$D)==0))
     return(ret)
 }
 
-endogen <- function(model){
+endogenous <- function(model){
     if(!inherits(model, "plsm")) stop("Model must be of class 'plsm'!")
     ret <- names(which(colSums(model$D)!=0))
     return(ret)
@@ -18,7 +18,7 @@ formative <- function(model){
 }
 
 reflective <- function(model){
-    if(class(model)!="plsm") stop("Model must be of class 'plsm'!")
+    if(!inherits(model, "plsm")) stop("Model must be of class 'plsm'!")
     ret <- names(which(lapply(model$blocks, function(x){attr(x, "mode")})=="A"))
     return(ret)
 }
@@ -32,9 +32,17 @@ indicators <- function(model, LV){
 
 # used in 'pathWeighting'
 predecessors <- function(model){
-    if(!inherits(model, "plsm")) stop("Model must be of class 'plsm'!")
+    if(!inherits(model, "plsm")) stop("Model must inherit from class 'plsm'!")
     D <- model$D
     foo <- function(x) names(which(x==1))
     pred <- apply(D, 2, foo)
     return(pred)
+}
+
+successors <- function(model){
+    if(!inherits(model, "plsm")) stop("Model must inherit from class 'plsm'!")
+    D <- model$D
+    foo <- function(x) names(which(x==1))
+    succ <- apply(D, 1, foo)
+    return(succ)
 }

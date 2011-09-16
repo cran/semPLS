@@ -4,7 +4,7 @@
 
 
 \title{
-  Convert to a RAM Representation
+  Convert Model for Use in \pkg{sem}
 }
 \description{
   Converts a \code{plsm} object to an object of class \code{mod} for

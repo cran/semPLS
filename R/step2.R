@@ -7,8 +7,8 @@ function(Latent, innerW, model, pairwise){
     colnames(fscores) <- model$latent
     for(i in model$latent){
       con <- which(innerW[,i]!=0)
-      fscores[,i] <- as.matrix(Latent[,con]) %*%
-                     as.matrix(innerW[con,i])
+      fscores[,i] <- Latent[,con, drop=FALSE] %*%
+                     innerW[con,i, drop=FALSE]
     }
     Latent <- scale(fscores)
   }

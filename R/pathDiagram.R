@@ -59,7 +59,7 @@ pathDiagram.sempls <- function(object, file, min.rank=NULL, max.rank=NULL, same.
     }
     if(!is.null(rSquared)) rSquared <- round(rSquared, digits)
     for(lat in latent){
-      if(is.null(rSquared)){
+      if(is.null(rSquared) || is.na(rSquared[lat,])){
         cat(file=handle, paste('  "', lat, '" [shape=ellipse]\n', sep=""))
       }
       else{cat(file=handle, paste('  "', lat, '" [shape=ellipse, label="', lat, '\\n',

@@ -7,7 +7,8 @@ function(data, outerW, model, pairwise){
     colnames(Latent) <- model$latent
     for(i in model$latent){
       mf <- as.matrix(data[ , blocks[[i]] ])
-      Latent[,i] <- mf %*% as.matrix(outerW[blocks[[i]], i])
+      #Latent[,i] <- mf %*% as.matrix(outerW[blocks[[i]], i])
+      Latent[,i] <- mf %*% outerW[blocks[[i]], i, drop=FALSE]
     }
     Latent <- scale(Latent)
   }

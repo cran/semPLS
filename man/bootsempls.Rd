@@ -16,13 +16,12 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
             c("ConstructLevelChanges", "IndividualSignChanges",
             "Standard"), verbose=TRUE, strata, \ldots)
 
-\method{print}{bootsempls}(x, digits=getOption("digits"), \ldots)
+\method{print}{bootsempls}(x, digits=3, \ldots)
 
 \method{summary}{bootsempls}(object, type=c("perc", "bca", "norm", "basic", "none"),
         level=0.95, \ldots)
 
-\method{print}{summary.bootsempls}(x, digits = getOption("digits"),
-\ldots)
+\method{print}{summary.bootsempls}(x, na.print, digits = 3, \ldots)
 
 \method{densityplot}{bootsempls}(x, data, pattern="beta", subset=NULL, \ldots)
 
@@ -32,9 +31,15 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
 }
 
 \arguments{
-  \item{object}{An object of class \code{sempls} as returned by the method \code{sempls}.}
-  \item{nboot}{The number of bootstrap replications; the default is \code{200}.}
-  \item{start}{A \code{character} value telling, how to initialise the
+  \item{object}{
+    An object of class \code{sempls} as returned by the method
+    \code{sempls}.
+  }
+  \item{nboot}{
+    The number of bootstrap replications; the default is \code{200}.
+  }
+  \item{start}{
+    A \code{character} value defining the initialisation of
     outer weights. If
     \itemize{
      \item \code{start="ones"}, then the outer weights for each block are initialised by ones.
@@ -42,7 +47,8 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
      \code{sempls} object are used for initialisation.
     }
   }
-  \item{method}{ A \code{character} value, which can take the values:
+  \item{method}{
+    A \code{character} value, which can take the values:
     \itemize{
       \item \code{"ConstructLevelChanges"} (default): The vector of
       loadings for each LV in each resample is compared to the corresponding
@@ -57,33 +63,63 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
       resampled statistics.
     }
   }
-  \item{verbose}{A \code{logical} indicating, whether progress of bootstrap shall
-  be displayed.}
-  \item{x}{An object of class \code{bootsempls} and
-  \code{summary.bootsempls} respectively.}
-  \item{digits}{Controls the number of digits to print.}
-  \item{type}{Type of bootstrapped confidence intervals to compute; the
+  \item{verbose}{
+    A \code{logical} indicating, whether progress of bootstrap shall
+    be displayed.
+  }
+  \item{x}{
+    An object of class \code{bootsempls} and
+    \code{summary.bootsempls} respectively.
+  }
+  \item{na.print}{
+    A \code{character} substituting values not to be printed.
+  }
+  \item{digits}{
+    Controls the number of digits to print.
+  }
+  \item{type}{
+    Type of bootstrapped confidence intervals to compute; the
     default is \code{"perc"} (percentile); see
-    \code{\link[boot]{boot.ci}} for details.}
-  \item{strata}{An integer vector or factor specifying the strata for
+    \code{\link[boot]{boot.ci}} for details.
+  }
+  \item{strata}{
+    An integer vector or factor specifying the strata for
     multi-sample problems. If the argument is not provided, all data is
-    assumed to come from the same sample. For details, see \code{\link[boot]{boot.ci}}}
-  \item{level}{Level for confidence intervals; default is \code{0.95}.}
-  \item{\ldots}{Arguments to be passed down to other methods.}
-    \item{data}{The \code{data} is not used because the \code{bootsempls}
-    object already contains the required data.}
-  \item{pattern}{A regular expression passed on to
+    assumed to come from the same sample. For details, see
+    \code{\link[boot]{boot.ci}}.
+  }
+  \item{level}{
+    Level for confidence intervals; default is \code{0.95}.
+  }
+  \item{\ldots}{
+    Arguments to be passed down to other methods.
+  }
+  \item{data}{
+    The \code{data} is not used because the \code{bootsempls}
+    object already contains the required data.
+  }
+  \item{pattern}{
+    A regular expression passed on to
     \code{\link[base]{grep}}. It is helpful to easily identify a set of
     coefficients, e.g. \code{pattern="beta"} plots the path coefficients
-    only.}
-  \item{subset}{Index or character vector of coefficients to
-    include. Note, that \code{subset} overrides \code{pattern}.}
-  \item{reflinesAt}{A vector of values at which to plot reference lines
-  into the parallel cooordinates.}
-  \item{col}{Colors for bootstrap statistics, sample statistic,
-    lower and upper bootstrap confidence levels and reference lines.}
-  \item{lty}{Line type for  bootstrap statistics, sample statistic,
-    lower and upper bootstrap confidence levels and reference lines.}
+    only.
+  }
+  \item{subset}{
+    Index or character vector of coefficients to
+    include. Note, that \code{subset} overrides \code{pattern}.
+  }
+  \item{reflinesAt}{
+    A vector of values at which to plot reference lines
+    into the parallel cooordinates.
+  }
+  \item{col}{
+    Colors for bootstrap statistics, sample statistic,
+    lower and upper bootstrap confidence levels and reference lines.
+  }
+  \item{lty}{
+    Line type for  bootstrap statistics, sample statistic,
+    lower and upper bootstrap confidence levels and reference lines.
+  }
 }
 
 \details{
@@ -98,36 +134,68 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
   \code{boot.sempls} returns an object of class \code{bootsempls}, which inherits
     from class \code{boot}, supported by the \code{boot} package. The returned
     object contains the following components:
-  \item{t0}{the estimated parameters in the model fit to the original data set.}
-  \item{t}{a matrix containing the bootstrapped estimates, one bootstrap
-    replication per row.}
-  \item{data}{the data frame containing the data to which the model was fit.}
-  \item{seed}{the value of \code{.Random.seed} when \code{boot.sempls} was called.}
-  \item{statistic}{the function used to produce the bootstrap replications;
-    this is always the local function \code{refit} from \code{boot.sempls}.}
-  \item{sim}{always set to \code{"ordinary"}; see the documentation for the
-    \code{\link[boot]{boot}} function.}
-  \item{stype}{always set to \code{"i"}; see the documentation for the
-    \code{\link[boot]{boot}} function.}
-  \item{call}{the call of the \code{boot.sem} function.}
-  \item{tryErrorIndices}{Contains the indices for each resample, which
-  returned \code{try-error}.}
-  \item{clcIndices}{When the method \code{ConstructLevelChanges} is used,
-  it stores the indices of the blocks of MVs for which a sign change
-  occured.}
-  \item{bootIndices}{A matrix containing the indices of the converged
-    bootstrap samples as rows.}
-  \item{outer_weights}{A martrix containing, as rows, the outer weights
-  for each bootsrap sample.}
-  \item{strata}{The strata used. This is the vector passed to boot, if
-    it was supplied or a vector of ones if there were no strata.}
+  \item{t0}{
+      The estimated parameters in the model fit to the original data
+      set.
+  }
+  \item{t}{
+    a matrix containing the bootstrapped estimates, one bootstrap
+    replication per row.
+  }
+  \item{data}{
+    The data frame containing the data to which the model was fit.
+  }
+  \item{seed}{
+    The value of \code{.Random.seed} when \code{boot.sempls} was called.
+  }
+  \item{statistic}{
+    The function used to produce the bootstrap replications;
+    this is always the local function \code{refit} from
+    \code{boot.sempls}.
+  }
+  \item{sim}{
+    Always set to \code{"ordinary"}; see the documentation for the
+    \code{\link[boot]{boot}} function.
+  }
+  \item{stype}{
+    Always set to \code{"i"}; see the documentation for the
+    \code{\link[boot]{boot}} function.
+  }
+  \item{call}{
+    The call of the \code{boot.sem} function.
+  }
+  \item{tryErrorIndices}{
+    Contains the indices for each resample, which
+    returned \code{try-error}.
+  }
+  \item{clcIndices}{
+    When the method \code{ConstructLevelChanges} is used, it stores the
+    indices of the blocks of MVs for which a sign change occured.
+  }
+  \item{bootIndices}{
+    A matrix containing the indices of the converged
+    bootstrap samples as rows.
+  }
+  \item{outer_weights}{
+    A martrix containing, as rows, the outer weights
+    for each bootsrap sample.
+  }
+  \item{fitted_model}{
+    The fitted sempls model returned from \code{\link{sempls}}.
+  }
+  \item{strata}{
+    The strata used. This is the vector passed to boot, if
+    it was supplied or a vector of ones if there were no strata.
+  }
 }
 
 \author{
 Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
-\seealso{\code{\link[boot]{boot}}, \code{\link[sem]{boot.sem}}}
+\seealso{
+  \code{\link[boot]{boot}}, \code{\link[sem]{boot.sem}}
+}
 
 \references{
   Tenenhaus, M., V. E. Vinzi, Y.-M. Chatelin, and C. Lauro (2005)
