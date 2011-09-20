@@ -6,7 +6,7 @@ export(read.splsm, sempls, bootsempls, pathDiagram, plsm2sem, plsm, rSquared,
        mvplot, mvpairs, pathCoeff, totalEffects, plsWeights, plsLoadings,
        plsmEdit, addPath, removePath, addMVs, removeMVs, invertLVs, addLV, removeLVs,
        exogenous, endogenous, reflective, formative, indicators, predecessors, successors,
-       qSquared, dgrho, comunality, redundancy, rSquared2, gof)
+       qSquared, dgrho, communality, redundancy, rSquared2, gof)
 
 S3method(print, sempls)
 S3method(plot, sempls)
@@ -47,8 +47,8 @@ S3method(qSquared, sempls)
 S3method(print, qSquared)
 S3method(dgrho, sempls)
 S3method(print, dgrho)
-S3method(comunality, sempls)
-S3method(print, comunality)
+S3method(communality, sempls)
+S3method(print, communality)
 S3method(redundancy, sempls)
 S3method(print, redundancy)
 S3method(gof, sempls)

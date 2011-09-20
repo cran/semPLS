@@ -1,0 +1,18 @@
+Changes in flexclust version 1.0-1
+
+  o corrected typo in method communality: "communality" 
+    was "comunality"
+
+
+Changes in flexclust version 1.0-0
+
+  o renamed argument for the weighting scheme in 
+    method sempls: "wscheme" was "E"
+
+  o added various new functions and methods
+
+
+Changes in flexclust version 0.8-7
+
+
+First version released on CRAN: 0.8-1

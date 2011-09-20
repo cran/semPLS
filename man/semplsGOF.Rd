@@ -10,12 +10,12 @@
 \alias{dgrho}
 \alias{dgrho.sempls}
 \alias{print.dgrho}
-\alias{comunality}
-\alias{comunality.sempls}
-\alias{print.comunality}
-\alias{comunality}
-\alias{comunality.sempls}
-\alias{print.comunality}
+\alias{communality}
+\alias{communality.sempls}
+\alias{print.communality}
+\alias{communality}
+\alias{communality.sempls}
+\alias{print.communality}
 \alias{redundancy}
 \alias{redundancy.sempls}
 \alias{print.redundancy}
@@ -48,9 +48,9 @@ dgrho(object, \ldots)
 \method{dgrho}{sempls}(object, \ldots)
 \method{print}{dgrho}(x, na.print=".", digits=2, \ldots)
 
-comunality(object, \ldots)
-\method{comunality}{sempls}(object, \ldots)
-\method{print}{comunality}(x, na.print=".", digits=2, \ldots)
+communality(object, \ldots)
+\method{communality}{sempls}(object, \ldots)
+\method{print}{communality}(x, na.print=".", digits=2, \ldots)
 
 redundancy(object, \ldots)
 \method{redundancy}{sempls}(object, \ldots)
@@ -141,8 +141,8 @@ qSquared(ecsi, d=4)
 ### Dillon-Goldstein's rho (aka composite reliability)
 dgrho(ecsi)
 
-### Comunalities
-comunality(ecsi)
+### Communalities
+communality(ecsi)
 
 ### Redundancy
 redundancy(ecsi)

@@ -1,5 +1,6 @@
-7dc7b4061f38bdf556da9373a88329c5 *DESCRIPTION
-39a995ee56ce16bddc676de3c4a88f32 *NAMESPACE
+eb4e83a84e17d25ba99d7fff18adb290 *DESCRIPTION
+1e4f9842bf73eaba9309246902d9d1a8 *NAMESPACE
+fa0cd67763783e43e93609a721fb4c35 *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -29,7 +30,7 @@ c471b9206a777ec04db994b647ccf449 *R/reorder.R
 263aae72b949226acdf1f2ecffb74a4d *R/resempls.R
 175385bc3ca0f7ffa8488730b5b4ee0c *R/residuals.R
 b28b58ea4cb0239332cbc49bb5e72d8b *R/sempls.R
-b06aa809ffb0b66e799baafabffe89b1 *R/semplsGOF.R
+459121715cdca9ece8341ece97478451 *R/semplsGOF.R
 b9ac9c2a4b450bad1fbfe626f5cee65b *R/step1.R
 c1c0d27bf9af43f41ecf25d3ab4befc3 *R/step2.R
 f941dcce6d632668fd2e97c2bb62eeba *R/step4.R
@@ -53,7 +54,7 @@ db0e143fadbd12e5b1837ee93f08ff5e *man/plsm2sem.Rd
 1e470367b8fd13346c8a1658386cc44f *man/plsmUtils.Rd
 1cd819621a18d26e559e3d6c244bfb02 *man/read.splsm.Rd
 a012c2e4696a14b997a286f8ae7b9230 *man/sempls.Rd
-33ad6f52c272005e8507ef43b3578e26 *man/semplsGOF.Rd
+15858587da773dfd23b1a6e6229213de *man/semplsGOF.Rd
 ef57ec6a554c6b2a01b1f278ef5dd542 *tests/SmartPLS/results/ecsi/centroid/crossLoadings.txt
 3130205f1fa9c6a8705b946f645f458b *tests/SmartPLS/results/ecsi/centroid/outerWeights.txt
 cf29e97c68d237239be4ce6b84785e28 *tests/SmartPLS/results/ecsi/centroid/pathCoefficients.txt
