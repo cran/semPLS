@@ -1,4 +1,4 @@
-# last modified 12 September 2011 by Armin Monecke
+# last modified 20 September 2011 by Armin Monecke
 
 importFrom(lattice, densityplot, parallel, barchart)
 export(read.splsm, sempls, bootsempls, pathDiagram, plsm2sem, plsm, rSquared,
