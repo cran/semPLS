@@ -74,11 +74,18 @@ removeMVs <- function(model, ...){
 }
 
 removeMVs.plsm <- function(model, MVs=character(), ...){
+  tmp <- sapply(model$blocks, setdiff, MVs)
+  ind <- which(sapply(tmp, length) == 0)
+  if(length(ind) > 0){
+    stop(paste("Removed complete block of MVs for the LVs: ",
+               paste(names(ind), collapse=", ", sep=""),
+               ".", sep=""))
+  }
   ind <- which(!(model$manifest %in% MVs))
   if(length(ind) == length(model$manifest)){
     stop("MVs to not found in the model. ")
   }
-  if(length(ind) > 0 & length(ind) < length(model$manifest)){
+  if(length(ind) >= 0 & length(ind) < length(model$manifest)){
     message(paste("Not all MVs to remove found in the model.\n",
                   "  Removing only: ",
                   paste(model$manifest[-ind], collapse=", "), ".", sep=""))
@@ -87,7 +94,7 @@ removeMVs.plsm <- function(model, MVs=character(), ...){
   if(length(ind) > 0){
     message(paste("Ignored to remove LVs: ",
                   paste(MVs[ind], collapse=", "), ".\n",
-                  "To remove LVs use method ''", sep=""))
+                  "To remove LVs use method 'removeLVs'", sep=""))
     MVs <- MVs[-ind]
   }
   mm <- model$measuremod
@@ -95,7 +102,9 @@ removeMVs.plsm <- function(model, MVs=character(), ...){
   ind2 <- which(mm[,2] %in% MVs)
   ind <- unique(c(ind1, ind2))
   mm <- mm[-ind,]
-  model <- plsm(data, strucmod=model$strucmod, measuremod=mm, order=model$order)
+  dummy <- as.data.frame(matrix(NA, nrow=1, ncol=length(model$manifest)))
+  attr(dummy, "names") <- model$manifest
+  model <- plsm(data=dummy, strucmod=model$strucmod, measuremod=mm, order=model$order)
   return(model)
 }
 

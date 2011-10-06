@@ -1,3 +1,14 @@
+Changes in semPLS version 1.0-3
+
+  o fixed bug in 'bootsempls' with argument 'method = "ConstructLevelChanges"': 
+    "Error in outer_weights[b, ] <- res$outer_weights[res$outer_weights !=  : 
+     number of items to replace is not a multiple of replacement length"
+    The Error occured when there actually are construct level changes in the
+    bootstrapped outer weights.
+
+  o fixed bug in 'removeLVs'
+
+
 Changes in semPLS version 1.0-2
 
   o corrected mistake in NEWS

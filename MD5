@@ -1,6 +1,6 @@
-541d8622aae8d22b81104522a56d57f3 *DESCRIPTION
+bc4a82c292c1fbe1d5c1792723dd0a2c *DESCRIPTION
 ef4c64c8719d078a19d8b303542d438f *NAMESPACE
-0235144a28e9545b72d836179d88ccbc *NEWS
+05ec8122fa4965660c8f89c50f22c543 *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -21,13 +21,13 @@ fb9a37342c3ddaf50a3aaf76921ad9a2 *R/plsLoadings.R
 fd6bf5e7671e4244bfbcd940d963fa46 *R/plsWeights.R
 b014533101b8aa81cb00533729ec28fa *R/plsm.R
 3a423610302a9f264832843e553e0784 *R/plsm2sem.R
-718a064257a5714912af1a84d42fbcf3 *R/plsmUtils.R
+beb596bd5c086c9f86a75220d28e7e2b *R/plsmUtils.R
 474613b3e86a60d643bd7b27f614c866 *R/predict.R
 b3537578faa0c2c021d755f222c77eda *R/qSquared.R
 047832a0a890a12234979ea1886cb80a *R/rSquared.R
 abd665bfb142039e73436b883873a5c6 *R/read.splsm.R
 c471b9206a777ec04db994b647ccf449 *R/reorder.R
-263aae72b949226acdf1f2ecffb74a4d *R/resempls.R
+5835b38611430ceaa6b8f6b21e8bb882 *R/resempls.R
 175385bc3ca0f7ffa8488730b5b4ee0c *R/residuals.R
 b28b58ea4cb0239332cbc49bb5e72d8b *R/sempls.R
 459121715cdca9ece8341ece97478451 *R/semplsGOF.R
@@ -51,10 +51,13 @@ a467f1b5006eee05efde62f41aa63a64 *man/bootsempls.Rd
 ca1193800676d5f4d343b619eeb1860a *man/pathDiagram.Rd
 587fa7cd284002a2f85621252867aec5 *man/plsm.Rd
 db0e143fadbd12e5b1837ee93f08ff5e *man/plsm2sem.Rd
-1e470367b8fd13346c8a1658386cc44f *man/plsmUtils.Rd
+e4199bdd8d0b28cb2b26f6500861f851 *man/plsmUtils.Rd
 1cd819621a18d26e559e3d6c244bfb02 *man/read.splsm.Rd
 a012c2e4696a14b997a286f8ae7b9230 *man/sempls.Rd
 15858587da773dfd23b1a6e6229213de *man/semplsGOF.Rd
+f77c7461258a9741c6444ebba07a18c6 *tests/ConstructLevelChanges/clcData.csv
+17daec6a8b96c8b07f1670578643532a *tests/ConstructLevelChanges/clcMeas.csv
+e3828750c915e3ec3783267a4a26b104 *tests/ConstructLevelChanges/clcStruc.csv
 ef57ec6a554c6b2a01b1f278ef5dd542 *tests/SmartPLS/results/ecsi/centroid/crossLoadings.txt
 3130205f1fa9c6a8705b946f645f458b *tests/SmartPLS/results/ecsi/centroid/outerWeights.txt
 cf29e97c68d237239be4ce6b84785e28 *tests/SmartPLS/results/ecsi/centroid/pathCoefficients.txt
@@ -70,4 +73,5 @@ dc1c85a9549ca3aa1c930aed1724eb14 *tests/SmartPLS/results/ecsi/factorial/totalEff
 f034a962b4af3d617cd49881c0b7d345 *tests/SmartPLS/results/ecsi/pathWeighting/pathCoefficients.txt
 4c163eba0897a8923f1d19d21bdf1c48 *tests/SmartPLS/results/ecsi/pathWeighting/readMe.txt
 0d8ca743dac521b57050b1aeeb4daa04 *tests/SmartPLS/results/ecsi/pathWeighting/totalEffects.txt
+ef725fc318dff3163d22d750566e149c *tests/regtest_ConstructLevelChanges.R
 4141430f89b31d3ce9fcb011e57a6ab2 *tests/regtest_SmartPLS.R
