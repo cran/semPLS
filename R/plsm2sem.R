@@ -9,15 +9,17 @@ plsm2sem.plsm <- function(model, file=stdout(), fixedVarMV=TRUE, fixedVarLV=TRUE
   blocks <- model$blocks
   fixed <- paste(", NA, 1\n", sep="")
   for (i in 1:length(blocks)){
-    lam <- paste(", lam", i, 1:length(blocks[[i]]), ", NA\n", sep="")
-    lam[blocks[[names(blocks)[i]]] %in% fixedLoad] <- fixed
     if(attr(blocks[[names(blocks)[i]]], "mode") == "A"){
+      lam <- paste(", lam_", i, "_", 1:length(blocks[[i]]), ", NA\n", sep="")
+      lam[blocks[[names(blocks)[i]]] %in% fixedLoad] <- fixed
       mm <- append(mm,
                    paste(names(blocks)[i], " -> ", blocks[[names(blocks)[i]]],
                          lam, sep="")
                    )
     }
     if(attr(blocks[[names(blocks)[i]]], "mode") == "B"){
+      lam <- paste(", gam_", 1:length(blocks[[i]]), "_", i, ", NA\n", sep="")
+      lam[blocks[[names(blocks)[i]]] %in% fixedLoad] <- fixed
       mm <- append(mm,
                    paste(blocks[[names(blocks)[i]]], " -> ", names(blocks)[i],
                          lam, sep="")
@@ -30,7 +32,7 @@ plsm2sem.plsm <- function(model, file=stdout(), fixedVarMV=TRUE, fixedVarLV=TRUE
   
   ## structural model correlations (path coefficients): one way arrows "->"; should be free
   indx <- which(model$D!=0, arr.ind=TRUE)
-  beta <- paste("beta", indx[,1], indx[,2], sep="")
+  beta <- paste("beta_", indx[,1], "_", indx[,2], sep="")
   # beta <- paste("beta", 1:nrow(model$strucmod), sep="")
   sm <- paste(model$strucmod[,1], " -> ", model$strucmod[,2], ", ", beta ,", NA\n", sep="")
   
@@ -39,7 +41,7 @@ plsm2sem.plsm <- function(model, file=stdout(), fixedVarMV=TRUE, fixedVarLV=TRUE
     mVar <- paste(model$manifest, " <-> ", model$manifest, ", NA, 1\n", sep="" )
   }
   if(!fixedVarMV){
-    the <- paste("the", 1:length(model$manifest), sep="")
+    the <- paste("the_", 1:length(model$manifest), sep="")
     mVar <- paste(model$manifest, " <-> ", model$manifest,", ", the, ", NA\n", sep="" )
   }
 
@@ -49,7 +51,7 @@ plsm2sem.plsm <- function(model, file=stdout(), fixedVarMV=TRUE, fixedVarLV=TRUE
     lVar <- paste(model$latent, " <-> ", model$latent, ", NA, 1\n", sep="" )
   }
   if(!fixedVarLV){
-    psi <- paste("psi", 1:length(model$latent), sep="")
+    psi <- paste("psi_", 1:length(model$latent), sep="")
     lVar <- paste(model$latent, " <-> ", model$latent,", ", psi, ", NA\n", sep="" )
   }
 

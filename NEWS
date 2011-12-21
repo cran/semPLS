@@ -1,3 +1,15 @@
+Changes in semPLS version 1.0-5
+
+  o Fixed bug that occured when the names for the parameters are not unique. 
+    For example the first LV has 11 MVs than the name for the 11th MVs loading
+    was 'lam111' - thus the same as for the 11th LV first MVs loading. The 
+    indizes of the parameters such as 'lam11', etc., are now sepperated by
+    an underscore resulting in, e.g., 'lam_1_1' for the loading of the first LVs
+    first MV.
+    The same applies to 'gamIJ' which is now 'gam_I_J' and to 'betaIJ' which is
+    now 'beta_I_J' with 'I' and 'J' the respective indizes.
+
+
 Changes in semPLS version 1.0-4
 
   o adaptions due to deprecated functions in sem (>= 2.0.0)

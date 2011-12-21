@@ -30,13 +30,13 @@ coef.sempls <- function(object, ...){
       arrows <- append(arrows, fooA(names(blocks)[i], blocks))
       # outer loadings for Mode 'A' (reflective)
       estimates <- append(estimates, crossL[blocks[[i]], names(blocks)[i]])
-      coef_names <- append(coef_names, paste("lam", i, 1:length(blocks[[i]]), sep=""))
+      coef_names <- append(coef_names, paste("lam_", i, "_", 1:length(blocks[[i]]), sep=""))
     }
     if(attr(blocks[[i]], "mode")=="B"){
       arrows <- append(arrows, fooB(names(blocks)[i], blocks))
       # outer weights for Mode 'B' (formative)
       estimates <- append(estimates, W[blocks[[i]], names(blocks)[i]])
-      coef_names <- append(coef_names, paste("gam", i, 1:length(blocks[[i]]), sep=""))
+      coef_names <- append(coef_names, paste("gam_", i, "_", 1:length(blocks[[i]]), sep=""))
     }
   }
   
@@ -48,7 +48,7 @@ coef.sempls <- function(object, ...){
   
   arrows <- append(arrows, foo(strucmod))
   indx <- which(pC != 0, arr.ind=TRUE)
-  coef_names <- append(coef_names, paste("beta", indx[,1], indx[,2], sep=""))
+  coef_names <- append(coef_names, paste("beta_", indx[,1], "_", indx[,2], sep=""))
   estimates <- append(estimates, pC[pC != 0])
   
   coefficients <- data.frame(Path=arrows, Estimate=estimates)
