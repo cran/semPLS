@@ -54,25 +54,43 @@ plsm2sem.plsm <- function(model, file=stdout(), fixedVarMV=TRUE, fixedVarLV=TRUE
   }
 
   # print file
-  if(require(sem)==FALSE) stop("Package 'XML' is required.")
-  if(require(sem)==FALSE & file==1){
-    cat(mm, sm, mVar, lVar, "\n", file=file)
+  #if(require(sem)==FALSE) stop("Package 'sem' is required.")
+  semAvailable <- require(sem)
+  if(semAvailable==FALSE){
+    if(file==1){
+      cat(mm, sm, mVar, lVar, "\n", file=file, sep="")
+    }
+    else if(file!=1){
+      cat(mm, sm, mVar, lVar, "\n", file=file, sep="")
+      cat("Now you can run specifyModel(\"", file, "\").\n",
+      "See description of sem (>= 2.0.0) package.\n", sep="")
+    }
   }
-  if(require(sem)==FALSE & file!=1){
-    cat(mm, sm, mVar, lVar, "\n", file=file)
-    cat("Now you can run specify.model(\"", file, "\").\n",
-      "See description of sem package.\n", sep="")
-  }
-  if(require(sem)==TRUE & file!=1){
-    cat(mm, sm, mVar, lVar, "\n", file=file)
-    sem_model <- specify.model(file)
-    return(sem_model)
-  }
-  if(require(sem)==TRUE & file==1){
-    tmp <- file()
-    cat(mm, sm, mVar, lVar, "\n", file=tmp)
-    sem_model <- specify.model(file=tmp)
-    close(tmp)
+  else if(semAvailable==TRUE){
+    # sem (>= 2.0.0)
+    if(packageVersion("sem")>=2){
+      if(file==1){
+        tmp <- file()
+        cat(mm, sm, mVar, lVar, "\n", file = tmp)
+        sem_model <- specifyModel(file = tmp)
+        close(tmp)
+      }
+      else{
+        sem_model <- specifyModel(file = file)
+      }
+    }
+    # sem (< 2.0.0)
+    else{
+      if(file==1){
+        tmp <- file()
+        cat(mm, sm, mVar, lVar, "\n", file = tmp)
+        sem_model <- specify.model(file = tmp)
+        close(tmp)
+      }
+      else{
+        sem_model <- specify.model(file=file)
+      }
+    }
     return(sem_model)
   }
 }

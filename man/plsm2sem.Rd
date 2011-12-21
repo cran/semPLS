@@ -30,14 +30,17 @@ plsm2sem(model, \ldots)
 
 
 \value{
-  If the \code{\link[sem]{sem}} package is available, an object of class \code{mod} (see \code{\link[sem]{specify.model}}) is returned, else a text representation of recticular action model (RAM) is written.
+  If the \code{\link[sem]{sem}} package is available, an object of class
+  \code{mod} (see \code{\link[sem]{specifyModel}}) is returned, else a
+  text representation of recticular action model (RAM) is written. Note,
+  \code{specifyModel} was \code{specify.model} in \pkg{sem (< 2.0.0)}.
 }
 
 \author{
   Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
-\seealso{\code{\link[sem]{specify.model}}}
+\seealso{\code{\link[sem]{specifyModel}}}
 
 \examples{
 data(ECSImobi)

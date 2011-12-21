@@ -1,6 +1,6 @@
-bc4a82c292c1fbe1d5c1792723dd0a2c *DESCRIPTION
+bed286a6069ca601b7aa8fa0a2b945f1 *DESCRIPTION
 ef4c64c8719d078a19d8b303542d438f *NAMESPACE
-05ec8122fa4965660c8f89c50f22c543 *NEWS
+1868733ad0862291923bc818c3e5892a *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -20,7 +20,7 @@ f04fe03878e69dd2a6ee065274f51159 *R/plots.R
 fb9a37342c3ddaf50a3aaf76921ad9a2 *R/plsLoadings.R
 fd6bf5e7671e4244bfbcd940d963fa46 *R/plsWeights.R
 b014533101b8aa81cb00533729ec28fa *R/plsm.R
-3a423610302a9f264832843e553e0784 *R/plsm2sem.R
+3ed9eef4c4b465e9cc10306408427c7b *R/plsm2sem.R
 beb596bd5c086c9f86a75220d28e7e2b *R/plsmUtils.R
 474613b3e86a60d643bd7b27f614c866 *R/predict.R
 b3537578faa0c2c021d755f222c77eda *R/qSquared.R
@@ -38,7 +38,7 @@ ae56f25f0c2046231d9604091d3a52c9 *R/step5.R
 74827339b90cea772c9340bead9f710b *R/sum1.R
 ad3a51d6800b83cb85bd9fc6ecaa7d00 *R/totalEffects.R
 7a3e9fa63566226063aab652ddcc0a7b *data/ECSImm.rda
-e9eda38e7e7633f2fe8f346ffb8fd76d *data/ECSImobi.rda
+b5338ebe5a316fc18e2b72591ea221d7 *data/ECSImobi.rda
 ea17f11f65373293a0451802876b67f4 *data/ECSIsm.rda
 36d776dc707f7167c2eb96a9ee8fb204 *data/hanafi2007.rda
 b8a07e76be726fa4567dd171c2bbf0d0 *data/mobi.rda
@@ -50,7 +50,7 @@ a467f1b5006eee05efde62f41aa63a64 *man/bootsempls.Rd
 93dc7f675701f3c766ae547ff3af4495 *man/mobi.Rd
 ca1193800676d5f4d343b619eeb1860a *man/pathDiagram.Rd
 587fa7cd284002a2f85621252867aec5 *man/plsm.Rd
-db0e143fadbd12e5b1837ee93f08ff5e *man/plsm2sem.Rd
+2cf67947bfd38b9897a1ae0b9670be05 *man/plsm2sem.Rd
 e4199bdd8d0b28cb2b26f6500861f851 *man/plsmUtils.Rd
 1cd819621a18d26e559e3d6c244bfb02 *man/read.splsm.Rd
 a012c2e4696a14b997a286f8ae7b9230 *man/sempls.Rd
