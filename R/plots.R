@@ -87,24 +87,32 @@ densityplot.bootsempls <- function(x, data, pattern="beta", subset=NULL, ...){
     densityplot(~value|name, data=Y, as.table=TRUE, ...)
  }
 
-# lattice:::parallel
-parallel.bootsempls <- function(x, data, pattern="beta", subset=NULL, reflinesAt,
+## lattice::parallel (Version < 0.20-5)
+## lattice::parallelplot (Version >= 0.20-5)
+parallelplot.bootsempls <- function(x, data, pattern="beta", subset=NULL, reflinesAt,
                                 col=c("grey", "darkred", "darkred", "black"),
-                                lty=c("solid", "solid", "dashed", "dotted"), ...){
+                                lty=c("solid", "solid", "dashed", "dotted"), ...)
+{
     ifelse(is.null(subset), ind <- grep(pattern, colnames(x$t)), ind <- subset)
+    
     lower <- summary(x, ...)$table$Lower
     upper <- summary(x, ...)$table$Upper
     Y <- rbind(x$t, x$t0, lower, upper, deparse.level=0)
+    
     if(!missing(reflinesAt)){
-        Y <- rbind(Y, matrix(rep(reflinesAt, each=ncol(x$t)), nrow=length(reflinesAt), byrow=TRUE))
+        Y <- rbind(Y, matrix(rep(reflinesAt, each=ncol(x$t)),
+                             nrow=length(reflinesAt), byrow=TRUE))
         origin <- c(rep("1resample", x$nboot), "2sample", "3ci", "3ci",
                     rep("4reflines", times=length(reflinesAt)))
         Y <- data.frame(Y, origin)
     }
-    else Y <- data.frame(Y, origin=c(rep("1resample", x$nboot), "2sample", "3ci", "3ci"))
-    parallel(~Y[ind], data=Y, groups=origin, common.scale=TRUE, col=col, lty=lty, ...)
-    #parallel(~Y[ind], data=Y, groups=origin, col=col, lty=lty, ...)
- }
+    else Y <- data.frame(Y, origin=c(rep("1resample", x$nboot),
+                              "2sample", "3ci", "3ci"))
+    
+    parallelplot(~Y[ind], data=Y, groups=origin,
+                   common.scale=TRUE, col=col, lty=lty, ...)
+}
+
 
 mvplot <- function(model, ...){
   UseMethod("mvplot", model)

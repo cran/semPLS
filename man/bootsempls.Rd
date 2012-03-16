@@ -4,6 +4,7 @@
 \alias{summary.bootsempls}
 \alias{print.summary.bootsempls}
 \alias{densityplot.bootsempls}
+\alias{parallelplot.bootsempls}
 \alias{parallel.bootsempls}
 \title{Bootstrap a PLS path model}
 \description{
@@ -25,7 +26,7 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
 
 \method{densityplot}{bootsempls}(x, data, pattern="beta", subset=NULL, \ldots)
 
-\method{parallel}{bootsempls}(x, data, pattern="beta", subset=NULL, reflinesAt,
+\method{parallelplot}{bootsempls}(x, data, pattern="beta", subset=NULL, reflinesAt,
          col=c("grey", "darkred", "darkred", "black"), lty=c("solid",
          "solid","dashed", "dotted"), \ldots)
 }
@@ -215,16 +216,16 @@ summary(ecsiBoot, type="perc", level=0.95)
 
 
 ## inspectation of bootstrap samples
-parallel(ecsiBoot, subset=1:ncol(ecsiBoot$t), reflinesAt=0)
+parallelplot(ecsiBoot, subset=1:ncol(ecsiBoot$t), reflinesAt=0)
 
 # only inspecting the path coefficients
-parallel(ecsiBoot, pattern="beta", reflinesAt=c(0,1))
+parallelplot(ecsiBoot, pattern="beta", reflinesAt=c(0,1))
 densityplot(ecsiBoot, pattern="beta")
 
 # only inspecting the outer loadings
-parallel(ecsiBoot, pattern="lam")
+parallelplot(ecsiBoot, pattern="lam")
 
 # only inspecting the outer loadings for Loyalty
-parallel(ecsiBoot, pattern="lam7", type="perc", level=0.90,
+parallelplot(ecsiBoot, pattern="lam7", type="perc", level=0.90,
          main="Loyalty\n 200 bootstrapped outer loadings")
 }

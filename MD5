@@ -1,6 +1,6 @@
-687b27960f03ca7952780d181b8eb6e1 *DESCRIPTION
-ef4c64c8719d078a19d8b303542d438f *NAMESPACE
-cfd4a54d298651d26cf8ea238526c6b1 *NEWS
+cc34167dd4ae54858082af18f68d2b79 *DESCRIPTION
+78d2fcb7c8bdb545dbb9975b9bfcdd8d *NAMESPACE
+2590f6af07623ea9e6b6f856b49b5629 *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -16,7 +16,7 @@ ed5b1c10f4f48a5990f9c39e436a12fa *R/innerW.R
 0a084986b4b31819d381d50c7b7dbd8a *R/pathCoeff.R
 14b109fe51742b569097dd1dad423a85 *R/pathDiagram.R
 84c8fc85ca7452ec5cfcc7d3fd4cedb1 *R/pathWeighting.R
-f04fe03878e69dd2a6ee065274f51159 *R/plots.R
+afb90ca2769b04ad80a9133cf566c41d *R/plots.R
 fb9a37342c3ddaf50a3aaf76921ad9a2 *R/plsLoadings.R
 fd6bf5e7671e4244bfbcd940d963fa46 *R/plsWeights.R
 b014533101b8aa81cb00533729ec28fa *R/plsm.R
@@ -38,14 +38,14 @@ ae56f25f0c2046231d9604091d3a52c9 *R/step5.R
 74827339b90cea772c9340bead9f710b *R/sum1.R
 ad3a51d6800b83cb85bd9fc6ecaa7d00 *R/totalEffects.R
 7a3e9fa63566226063aab652ddcc0a7b *data/ECSImm.rda
-b5338ebe5a316fc18e2b72591ea221d7 *data/ECSImobi.rda
+f9ab8a53d924f70fdfdc884822840ebd *data/ECSImobi.rda
 ea17f11f65373293a0451802876b67f4 *data/ECSIsm.rda
 36d776dc707f7167c2eb96a9ee8fb204 *data/hanafi2007.rda
 b8a07e76be726fa4567dd171c2bbf0d0 *data/mobi.rda
 9967fc8dc560b18b7e62cf60608e9b02 *inst/ECSImeasuremod.csv
 c5d03a291822ba72018b17e82c1f6988 *inst/ECSIstrucmod.csv
 c61c8db04f93220ed6431f82f86118b3 *inst/SmartPLS/workspace/ecsi/ECSI_Tenenhaus.splsm
-a467f1b5006eee05efde62f41aa63a64 *man/bootsempls.Rd
+44ec39a7b7b87174a7db24a5c5f656c3 *man/bootsempls.Rd
 4046c7b07ce316ee5b4139c9d92a2534 *man/hanafi2007.Rd
 93dc7f675701f3c766ae547ff3af4495 *man/mobi.Rd
 ca1193800676d5f4d343b619eeb1860a *man/pathDiagram.Rd

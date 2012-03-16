@@ -1,3 +1,9 @@
+Changes in semPLS version 1.0-6
+
+ o parallel.bootsempls() deprecated in favour of parallelplot.bootsempls(),
+   to stay in line with the lattice package.
+
+
 Changes in semPLS version 1.0-5
 
   o Fixed bug that occured when the names for the parameters are not unique. 
