@@ -1,6 +1,6 @@
-cc34167dd4ae54858082af18f68d2b79 *DESCRIPTION
+5daac98b415817f144d4f3536c1dc246 *DESCRIPTION
 78d2fcb7c8bdb545dbb9975b9bfcdd8d *NAMESPACE
-2590f6af07623ea9e6b6f856b49b5629 *NEWS
+3b3ef9a886324fd84e03b052029766d6 *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -23,7 +23,7 @@ b014533101b8aa81cb00533729ec28fa *R/plsm.R
 e021b8261b34d723155679d31a586fe6 *R/plsm2sem.R
 beb596bd5c086c9f86a75220d28e7e2b *R/plsmUtils.R
 474613b3e86a60d643bd7b27f614c866 *R/predict.R
-b3537578faa0c2c021d755f222c77eda *R/qSquared.R
+8bc11fd7b8ceb68a89f5fbf775443ce6 *R/qSquared.R
 047832a0a890a12234979ea1886cb80a *R/rSquared.R
 abd665bfb142039e73436b883873a5c6 *R/read.splsm.R
 c471b9206a777ec04db994b647ccf449 *R/reorder.R
@@ -54,7 +54,7 @@ ca1193800676d5f4d343b619eeb1860a *man/pathDiagram.Rd
 e4199bdd8d0b28cb2b26f6500861f851 *man/plsmUtils.Rd
 1cd819621a18d26e559e3d6c244bfb02 *man/read.splsm.Rd
 a012c2e4696a14b997a286f8ae7b9230 *man/sempls.Rd
-15858587da773dfd23b1a6e6229213de *man/semplsGOF.Rd
+5d51b1c4db7d8d94b6951d0d79dc510f *man/semplsGOF.Rd
 f77c7461258a9741c6444ebba07a18c6 *tests/ConstructLevelChanges/clcData.csv
 17daec6a8b96c8b07f1670578643532a *tests/ConstructLevelChanges/clcMeas.csv
 e3828750c915e3ec3783267a4a26b104 *tests/ConstructLevelChanges/clcStruc.csv

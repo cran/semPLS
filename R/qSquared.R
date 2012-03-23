@@ -61,7 +61,7 @@ qSquared.sempls <- function(object, d=NULL, impfun, dlines=TRUE, total=FALSE, ..
     for(i in endrefl){
         if(dlines | is.null(d)) n <- nrow(data)
         if(is.null(d)){
-            d <- n
+            d <- n + 1
             if(!dlines){
                 dlines <- TRUE
                 message("Set argument 'dlines' to:", dlines, "\n")
@@ -69,11 +69,10 @@ qSquared.sempls <- function(object, d=NULL, impfun, dlines=TRUE, total=FALSE, ..
         }
         E <- vector("numeric", length=d)
         O <- vector("numeric", length=d)
-        for(j in 1:(d-1)){
+        for(j in 1:d){
             dblind <- object$data
             if(dlines){
-                if(d==n) blind <- j
-                else blind <- seq(j, n, by=d)
+                blind <- seq(j, n, by=d)
                 dblind[blind,object$model$blocks[[i]]] <- NA
             }
             else{

@@ -70,7 +70,7 @@ gof(object, \ldots)
   }
   \item{d}{
     A \code{numeric} value for the omission distance. Thus choosing
-    \eqn{d=N-1}, where \eqn{N} is the number of complete observations,
+    \eqn{d=N}, where \eqn{N} is the number of complete observations,
     is leaving one out cross validation. This is done when \code{d}
     takes its default value \code{NULL}.
   }

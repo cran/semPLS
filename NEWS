@@ -1,3 +1,9 @@
+Changes in semPLS version 1.0-7
+
+ o Fixed bug in qSquared(). Results from qSquared() prior to this version are
+   wrong.
+
+
 Changes in semPLS version 1.0-6
 
  o parallel.bootsempls() deprecated in favour of parallelplot.bootsempls(),
