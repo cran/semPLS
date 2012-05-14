@@ -1,0 +1,20 @@
+citHeader("To cite semPLS in publications use:")
+
+citEntry(entry = "Article",
+  title        = "{semPLS}: Structural Equation Modeling Using Partial Least Squares",
+  author       = personList(as.person("Armin Monecke"),
+                   as.person("Friedrich Leisch")),
+  journal      = "Journal of Statistical Software",
+  year         = "2012",
+  volume       = "48",
+  number       = "3",
+  pages        = "1--32",
+  url          = "http://www.jstatsoft.org/v48/i03/",
+
+  textVersion  =
+  paste("Armin Monecke, Friedrich Leisch (2012).",
+        "semPLS: Structural Equation Modeling Using Partial Least Squares.",
+        "Journal of Statistical Software, 48(3), 1-32.",
+        "URL http://www.jstatsoft.org/v48/i03/.")
+)
+

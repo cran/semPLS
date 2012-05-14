@@ -160,6 +160,12 @@ acyclic(model)
   thus represented by an acyclic graph.
 }
 
+\references{
+  Armin Monecke and Friedrich Leisch (2012). semPLS: Structural Equation
+  Modeling Using Partial Least Squares. Journal of Statistical Software,
+  48(3), 1-32., URL \url{http://jstatsoft.org/v48/i03/}.
+}
+
 \author{
   Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }

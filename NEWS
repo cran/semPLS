@@ -1,3 +1,9 @@
+Changes in semPLS version 1.0-8
+
+ o added references for JSS publication 'semPLS: Structural Equation
+   Modeling Using Partial Least Squares'. See citation("semPLS").
+
+
 Changes in semPLS version 1.0-7
 
  o Fixed bug in qSquared(). Results from qSquared() prior to this version are
