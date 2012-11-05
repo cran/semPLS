@@ -11,16 +11,14 @@
 \usage{
 data(hanafi2007)
 }
+
 \format{
   A data frame containing 10 observations of 11 variables.
 }
+
 \references{
   Hanafi, M. (2007), PLS Path modelling: computation of latent variables
   with the estimation mode B, Computational Statistics 22, 275-292.
-}
-
-\author{
-Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
 \seealso{

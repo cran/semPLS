@@ -120,14 +120,6 @@ gof(object, \ldots)
   J., Wang H.F. (eds.), Handbook of Partial Least Squares: Concepts,
   Methods and Applications in Marketing and Related Fields, chapter
   2. Springer-Verlag Berlin Heidelberg.
-
-  Armin Monecke and Friedrich Leisch (2012). semPLS: Structural Equation
-  Modeling Using Partial Least Squares. Journal of Statistical Software,
-  48(3), 1-32., URL \url{http://jstatsoft.org/v48/i03/}.
-}
-
-\author{
-  Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
 \seealso{

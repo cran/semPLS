@@ -75,6 +75,7 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, wscheme="cent
                                timevar="LVs",
                                varying=list(colnames(Wold)),
                                direction="long")
+  ## fixme: find something more efficient than 'cbind'
   weights_evolution <- cbind(weights_evolution, iteration=0)
   Hanafi <- cbind(f=sum(abs(cor(factor_scores)) * model$D),
                   g=sum(cor(factor_scores)^2 * model$D),
@@ -128,7 +129,7 @@ function(model, data, maxit=20, tol=1e-7, scaled=TRUE, sum1=FALSE, wscheme="cent
   result$inner_weights <- innerWeights
   result$outer_weights <- Wnew
   result$weights_evolution <- weights_evolution
-  result$Hanafi<- Hanafi
+  result$Hanafi <- Hanafi
   result$factor_scores <- factor_scores
   result$data <- data
   result$N <- N

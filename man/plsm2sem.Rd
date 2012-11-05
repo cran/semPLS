@@ -28,16 +28,11 @@ plsm2sem(model, \ldots)
   \item{fixedLoad}{A \code{character} vector naming the MVs, for which the outer loading should be fixed to one.}
 }
 
-
 \value{
   If the \code{\link[sem]{sem}} package is available, an object of class
   \code{mod} (see \code{\link[sem]{specifyModel}}) is returned, else a
   text representation of recticular action model (RAM) is written. Note,
   \code{specifyModel} was \code{specify.model} in \pkg{sem (< 2.0.0)}.
-}
-
-\author{
-  Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
 \seealso{\code{\link[sem]{specifyModel}}}
@@ -46,6 +41,7 @@ plsm2sem(model, \ldots)
 data(ECSImobi)
 if(require(sem)){
    ECSIsem <- plsm2sem(ECSImobi)
+   detach(package:sem)
    ECSIsem
 }
 }

@@ -59,15 +59,10 @@ data(ECSIsm)
   }
 }
 
-
 \references{
   Tenenhaus, M., V. E. Vinzi, Y.-M. Chatelin, and C. Lauro (2005)
   PLS path modeling.
   Computational Statistics & Data Analysis 48, 159-205.
-}
-
-\author{
-Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
 }
 
 \seealso{

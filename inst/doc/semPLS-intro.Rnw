@@ -1,0 +1,1629 @@
+\documentclass[nojss]{jss}
+
+\usepackage{amsmath,amstext,bm,tabularx,multirow,longtable,thumbpdf}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,snakes,shapes}
+
+% \clubpenalty = 10000
+% \widowpenalty = 10000
+% \displaywidowpenalty = 10000
+
+
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+\newcommand{\COR}{\mathsf{COR}}
+\setkeys{Gin}{width=\textwidth}
+
+%%% mY modifiEd Packages & stuFF
+\def\us{\char`\_}
+
+\SweaveOpts{prefix.string=ecsi, width=8, height=8, eps=FALSE, echo=true, keep.source=false}
+
+\graphicspath{{graphics/}}
+
+\definecolor{lightgray}{rgb}{.9,.9,.9}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% almost as usual
+\author{Armin Monecke\\Ludwig--Maximilians--Universit\"at \\M\"unchen \And
+        Friedrich Leisch\\Universit\"at f\"ur Bodenkultur \\Wien}
+\title{\pkg{semPLS}: Structural Equation Modeling Using Partial Least Squares}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Armin Monecke, Friedrich Leisch} %% comma-separated
+\Plaintitle{semPLS: Structural Equation Modeling Using Partial Least Squares} %% without formatting
+%\Shorttitle{A Capitalized Title} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+  This introduction to the \proglang{R} package \pkg{semPLS} is a
+  (slightly) modified version of \citet{Monecke+Leisch@2012}, published
+  in the {\it Journal of Statistical Software}.
+
+  %\input{./chapters/abstract}
+  Structural equation models (SEM) are very popular in many
+disciplines. The partial least squares (PLS) approach to SEM offers
+an alternative to covariance based SEM, which is especially suited for
+situations when data is not normally distributed. PLS path modelling
+is referred to as \emph{soft--modeling--technique} with minimum
+demands regarding measurement scales, sample sizes and residual
+distributions. The \pkg{semPLS} package provides the capability to
+estimate PLS path models within the \proglang{R} programming
+environment. Different setups for the estimation of factor scores can
+be used. Furthermore it contains modular methods for computation of
+bootstrap confidence intervals, model parameters and several quality
+indices. Various plot functions help to evaluate the model. The well
+known mobile phone dataset from marketing research is used to
+demonstrate the features of the package.
+}
+
+\Keywords{structural equation model, path model,partial least squares, \proglang{R}}
+\Plainkeywords{structural equation model, path model, partial least squares, R} %% without formatting
+
+\Volume{48}
+\Issue{3}
+\Month{May}
+\Year{2012}
+\Submitdate{2011-09-21}
+\Acceptdate{2012-04-16}
+
+\Address{
+  Armin Monecke\\
+  Institut f\"ur Statistik\\
+  Ludwig--Maximilians--Universit\"at M\"unchen\\
+  Ludwigstr. 33\\
+  D-80539 M\"unchen, Germany\\
+  E-mail: \email{Armin.Monecke@stat.uni-muenchen.de}\\
+  URL:  \url{http://www.statistik.lmu.de/~monecke/}\\       
+
+  Friedrich Leisch\\
+  Institut f\"ur angewandte Statistik und EDV\\
+  Universit\"at f\"ur Bodenkultur Wien\\
+  Gregor-Mendel-Str. 33\\
+  A-1180 Wien, Austria\\
+  E-mail: \email{Friedrich.Leisch@R-project.org}\\
+  URL: \url{http://www.rali.boku.ac.at/friedrichleisch.html}\\
+}
+
+
+%%\usepackage{Sweave} %% already provided by jss.cls
+%%\VignetteIndexEntry{semPLS: Structural Equation Modeling Using Partial Least Squares}
+%%\VignetteKeywords{structural equation model, path model, partial least squares, R}
+%%\VignettePackage{semPLS}
+%%\VignetteDepends{semPLS, sem, matrixcalc, XML}
+
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{document}
+
+@ 
+<<options, echo=FALSE>>=
+options(list(prompt = "R> ", continue = "+  ", width = 78, 
+      useFancyQuotes = FALSE))
+@ %def 
+
+% \input{./chapters/intro}
+\section{Introduction}
+Within the academic literature of many fields, \citet{Rigdon:1998}
+remarks, structural equation modeling (SEM) has taken up a prominent
+role. Whenever researchers deal with relations between constructs such
+as satisfaction, role ambiguity, or attitude, SEM is likely to be the
+methodology of choice. Since SEM is designed for working with multiple
+related equations simultaneously, it offers a number of advantages
+over some more familiar methods and therefore provides a general
+framework for linear modeling. SEM allows great flexibility on how the
+equations are specified. The development of an evocative graphical
+language \citep{McA:1980, McAMcD:1984} has accompanied the development
+of SEM as a statistical method. Due to this language, complex
+relationships can be presented in a convenient and powerful way to
+others not familiar with SEM.
+
+The partial least squares approach to SEM (or PLS path modeling),
+originally developed by \citet{Wold:1966, Wold:1982, Wold:1985} and
+\citet{Loh:1989}, offers an alternative to the more prominent
+covariance-based \citep[CBSEM,][]{Joer:1978}. Whereas CBSEM estimates
+model parameters so that the discrepancy between the estimated and
+sample covariance matrices is minimized, in PLS path models the
+explained variance of the endogenous latent variables is maximized by
+estimating partial model relationships in an iterative sequence of
+ordinary least squares (OLS) regressions
+\citetext{e.g., \citealp{HRS:2011}}. It is worth mentioning that in PLS
+path modeling latent variable (LV) scores are estimated as exact
+linear combinations of their associated manifest variables (MVs) and
+treats them as error free substitutes for the manifest
+variables. Whereas CBSEM requires \emph{hard} distributional
+assumptions, PLS path modeling is a \emph{soft-modeling-technique}
+with less rigid distributional assumptions on the data. At this point
+it should be mentioned, that PLS path modeling is not to be confused
+with PLS regression. According to \citet{Chin:1998} it can be argued,
+that depending on the researcher's objectives and epimistic view of
+data to theory, properties of the data at hand or level of theoretical
+know\-ledge and measurement development, PLS path modeling is more
+suitable.  Additionally, great interest in applying PLS path models
+has been stimulated by the increasing need in modeling so called
+formative constructs, especially in marketing and
+management/organizational research \citetext{e.g.,
+\citealp{Diam:2001}; \citealp{Jar:2003}; \citealt{MacK:2005}}. The
+application of PLS path models in marketing is discussed in depth by
+\citet{Henseler:2009} and \citet{Hair:2011}. For a related discussion
+in the field of management information systems, see \citet{RSS:2012}.
+
+The \pkg{semPLS} is a package for structural equation modeling (SEM)
+with partial least squares (PLS) in \proglang{R} \citep{R}. It is available
+from the Comprehensive \proglang{R} Archive Network at
+\url{http://CRAN.R-project.org/package=semPLS}. One of the
+major design goals is to provide a comprehensive open-source reference
+implementation. The package offers
+\begin{itemize}
+\item modular methods for model fitting, calculation of quality
+indices, etc.,
+\item plotting features for better understanding of the multivariate
+model data,
+\item a convenient user interface for specifying, manipulating,
+importing and exporting model specifications,
+\item and an easily extensible infrastructure.
+\end{itemize} 
+Within the package there are two central methods. The
+first is \code{plsm} which is used to create valid model
+specifications. The second is \code{sempls} which fits the model,
+specified with \code{plsm}. Factor scores can be estimated by using
+three different weighting schemes: centroid, factorial and path
+weighting. For the calculation of the outer weights, correlations can
+be calculated by using Pearson-correlations for continuous data or
+Spearman- or Kendall-correlations when the scale of the data has
+rather ordinal character. If the data contains missing values it is
+possible to use pairwise correlations to compute outer
+weights. In addition to the estimated factor scores and outer weights,
+\code{sempls} computes loadings, path coefficients and total effects,
+as those are the parameters of interest.  For the outer
+loadings/weights and path coefficients different types of bootstrap
+confidence intervals and standard errors are available. Calculation of
+quality indices ($R^2$, $Q^2$, Dillon-Goldstein's $\rho$, etc.) is done
+via specific methods. PLS path models specified with \code{plsm} can
+be easily manipulated by a variety of utility methods. Models
+specified in \pkg{SmartPLS} can be imported. Several plot types (e.g. pairs
+plots of MV blocks, convergence diagnostic of outer weights, kernel
+density estimates of residuals/bootstrap parameters, parallel
+coordinates of bootstrap parameters, etc.) support the researcher in
+evaluating their models. Finally a graphical representation of the
+model including outer loadings and path coefficients can be written to
+a DOT file which can be rendered and plotted by \code{dot}
+\citep{Gansner:2006}, a layout program contained in
+\pkg{Graphviz} \citep{Graphviz}. \pkg{Graphviz}
+is an open-source graph visualization software. When it is intended to
+also estimate the model by the covariance-based approach (CBSEM), the
+model can be exported to an object of class \code{semmod} and fitted with
+\code{sem} \citep{sem2, sem}, see Section~\ref{sec:misc}.
+
+In the development process of the \pkg{semPLS} package we checked the
+results for model para\-meters against those obtained by a list of other
+PLS path modeling software. This list includes
+\pkg{SmartPLS} \citep{SmartPLS:2005},
+\pkg{XLSTAT-PLSPM} \citep[in cooperation with Addinsoft France, see \url{http://www.xlstat.com/en/products/xlstat-plspm/}]{PLEASURE:2007}
+and the \pkg{plspm} package \citep{plspm}. Note, that \pkg{SmartPLS} and \pkg{XLSTAT-PLSPM}
+are closed source and \pkg{plspm} is licensed under the General Public License
+(GPL $\ge 2$).  All
+differences in model parameters due to the used software were in line
+with the predefined tolerance for the outer weights.
+
+\begin{description}
+\item[\pkg{SmartPLS}:] \pkg{SmartPLS} is a stand alone software specialized for
+PLS path models. It is built on a \proglang{Java} \pkg{Eclipse} platform
+making it operating system independent. The model is specified via
+drag \& drop by drawing the structural model for the latent variables
+and by assigning the indicators to the latent variables. Data files of
+various formats can be loaded. After fitting a model, coefficients are
+added to the plot. More detailed output is provided in plain text,
+{\LaTeX} and HTML format. The graph representing
+the model can be exported to PNG. Besides bootstrapping and
+blindfolding methods it supports the specification of interaction
+effects. A special feature of \pkg{SmartPLS} is the finite mixture routine
+(FIMIX), a method to deal with unobserved heterogeneity
+\citetext{e.g., \citealp{Ring:2010}; \citealp{MR:2010};
+  \citealp{SBRS:2011}}.
+\item[\pkg{XLSTAT-PLSPM}:] \pkg{XLSTAT} \citep{XLSTAT} is a modular statistical
+software relying on Microsoft \pkg{Excel} for the input of data and the display of
+results, but the computations are done using autonomous software
+components. \pkg{XLSTAT-PLSPM} is integrated in \mbox{XLSTAT} as a module for the
+estimation of PLS path models. It is developed by a research team from
+the Department of Mathematics and Statistics of the University of
+Naples in Italy and Addinsoft in France and implements all
+methodological features and most recent findings of the PLEASURE
+(Partial LEAst Squares strUctural Relationship Estimation) technology
+by \citet{PLEASURE:2007}. Special features of \pkg{XLSTAT-PLSPM} are
+multi-group comparisons \citep{Chin:2010} and the REBUS segmentation
+approach \citep{Esp:2010} for treatment of unobserved heterogeneity. 
+
+\item[\pkg{plspm} in \proglang{R}:] The \pkg{plspm} package implements
+PLS methods with emphasis on structural equation models in
+\proglang{R}. The fitting method \code{plspm.fit} returns a list
+including all the estimated parameters and almost all statistics
+associated with PLS path models. The \code{print} method gives an
+overview of the following list elements: outer model, inner model,
+scaled LVs, LVs for \code{scaled = FALSE}, outer weights, loadings, path
+coefficients matrix, $R^2$, outer correlations, summary inner
+model, total effects, unidimensionality, goodness-of-fit, bootstrap
+results (only if activated) and the data matrix. A \code{summary} is
+available, which basically returns the latter list including some
+formatting. A plot method creates a graphical representation of the
+model including estimated parameters. For treatment of observed
+heterogeneity \pkg{pathmox} \citep{pathmox} is provided as
+companion package.
+\end{description}
+
+For a long time \pkg{LVPLS}~1.8 \citep{Loh:1987} was the only available
+software for PLS path modeling. The DOS-based program
+includes two different modules for estimating path models. The \code{LVPLSC}
+method analyzes the covariance matrix of the observed variables,
+whereas the \code{LVPLSX} module is able to process raw data. In order to
+specify the input file an external editor is necessary. The input
+specification requires that the program parameters are defined at
+specific positions in the file. Results are reported in a plain text
+file. The program offers blindfolding and jackknifing as resampling
+methods in case raw data has been analyzed. When analyzing
+covariance/correlation matrices, resampling techniques cannot be
+applied.
+
+A comparison of PLS Software available in August 2006 is provided by
+\citet{Temme:2010}: \pkg{LVPLS},
+\pkg{VisualPLS} \citep{Fu:2006}, \pkg{PLS-Graph}
+\citep{Chin:2003}, \pkg{SPAD}
+\citep{Spad:2006} and \pkg{SmartPLS}. \pkg{XLSTAT-PLSPM} and the \pkg{plspm}
+package were released later. For users who want a graphical user interface (GUI),
+\pkg{SmartPLS} or \pkg{XLSTAT-PLSPM} may be convenient choices. \pkg{SmartPLS} can be
+obtained free of charge whereas \pkg{XLSTAT-PLSPM} is
+distributed commercially. Concerning the open-source implementations
+\pkg{semPLS} and \pkg{plspm}, there may not exist a specific reason
+for many users to prefer one over the other, though the modular design
+of \pkg{semPLS} makes it more flexible and easier to extend. In
+general it is of benefit to have independent open-source
+implementations, e.g., for benchmarking.
+
+The remainder of this paper is organized as follows: In
+Section~\ref{sec:theory} we sketch the theoretical background of PLS
+path modeling exemplary for the ECSI model \citep{Ten:2005}, a
+customer satisfaction index for the mobile phone industry. The basic
+usage of \code{plsm} and \code{sempls} is illustrated in
+Section~\ref{sec:sempls}. Section~\ref{sec:bootsempls} explains how to
+get bootstrap confidence intervals for the model parameters and how to
+visualize bootstrapped parameters. In Section~\ref{sec:misc} other
+topics such as manipulation of the model specification, export for
+fitting with \code{sem} and importing of model specifications from
+\pkg{SmartPLS} are addressed. Finally, we close with a summary and
+outlook in Section~\ref{sec:outlook}.
+
+
+% \input{./chapters/theory}
+\section{Theoretical background: PLS path models in a nutshell}
+\label{sec:theory}
+
+@ 
+<<label=ecsi-full, echo=false, eval=false>>=
+data(ECSImobi)
+ecsi <- sempls(model = ECSI, data = mobi, wscheme = "centroid")
+### Note, for rendering the path diagram graphviz (www.graphviz.org)
+### must be available.
+pathDiagram(ecsi, file = "ecsi-full", full = FALSE,
+  edge.labels = "names", output.type = "graphics", digits = 2,
+  graphics.fmt = "pdf")
+@ %def 
+
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.95\textwidth, trim=15 20 15 20, clip]{ecsi-full}
+  \caption{The graph represents the nomological
+    network of the ECSI model for mobile phone provider
+    \citep{Ten:2005}. LVs are displayed in ellipses and MVs are
+    displayed in boxes.
+  \label{fig:ecsiFull}}
+\end{figure}
+
+PLS path models consists of three components: the structural model,
+the measurement model and the weighting scheme. Whereas structural and
+measurement model are components in all kinds of SEMs with latent
+constructs, the weighting scheme is specific to the PLS approach. As
+in \citet{Ten:2005} we introduce the theory by the example of European
+customer satisfaction index (ECSI) and the measurement instrument for
+the mobile phone industry. The description of the measurement
+instrument is available from the help page \code{help("ECSImobi")} in
+the \pkg{semPLS} package. In Figure~\ref{fig:ecsiFull} all relations
+between latent variables (LVs) and manifest variables (MVs), the
+nomological network, are shown. Nodes representing LVs are coded as
+ellipses and those representing MVs as boxes. Contrary to the CBSEM
+approach, in the PLS context each MV is only allowed to be connected
+to one LV. Furthermore all arrows connecting a LV with its block of
+MVs must point in the same direction. The connections between LVs and
+MVs is referred to as measurement or outer model. A model with all
+arrows pointing outwards is called a Mode A model -- all LVs have
+reflective measurements. A model with all arrows pointing inwards is
+called a Mode B model -- all LVs have formative measurements. A model
+containing both, formative and reflective LVs is referred to as MIMIC
+or a mode C model.
+
+PLS path models only permit recursive relationships and can be
+expressed as simple connected digraphs. A digraph is called simple
+if it has no loops and at most one arc between any pair of nodes. A
+digraph is connected if an undirected path between any two
+nodes exits; consequently no node is isolated from the rest.
+%\clearpage
+
+\subsection{The structural model}
+\label{sec:strucmod}
+
+\begin{figure}[t!]
+\centering
+\tikzstyle{latent}=[ellipse,
+                                    thick,
+                                    minimum width=2.5cm,
+                                    minimum height=1cm,
+                                    draw=purple!80,
+                                    fill=purple!20]
+\tikzstyle{background}=[rectangle, fill=gray!10, inner sep=0.2cm, rounded corners=5mm]
+
+\begin{tikzpicture}[>=latex,text height=1.5ex,text depth=0.25ex]
+    % "text height" and "text depth" are required to vertically
+    % align the labels with and without indices.
+
+  % The various elements are conveniently placed using a matrix:
+  \matrix[row sep=1.0cm,column sep=0.8cm] {
+    & \node (Image) [latent] {Image};& & \node (Structural Model)[]{Structural Model}; \\
+    \node (Expectation) [latent] {Expectation}; & & & \node (Loyalty) [latent] {Loyalty};\\
+    & \node (Value) [latent] {Value}; & \node (Satisfaction) [latent] {Satisfaction}; & \\
+    \node (Quality) [latent] {Quality}; & & & \node (Complaints) [latent] {Complaints};\\
+  };
+  \path[->]
+  (Image) edge[thick] node [above left]{$\beta_{12}$} (Expectation)	% The main path between the
+  (Image) edge[thick] node [above]{$\beta_{17}$} (Loyalty)
+  (Image) edge[thick] node [above right]{$\beta_{15}$} (Satisfaction)
+  (Expectation) edge[thick] node [left]{$\beta_{23}$} (Quality)
+  (Expectation) edge[thick] node [below]{$\beta_{24}$} (Value)
+  (Expectation) edge[thick] node [above]{$\beta_{25}$} (Satisfaction)
+  (Quality) edge[thick] node [above left]{$\beta_{34}$} (Value)
+  (Value) edge[thick] node [below]{$\beta_{45}$} (Satisfaction)
+  (Satisfaction) edge[thick] node [above left]{$\beta_{57}$} (Loyalty)
+  (Satisfaction) edge[thick] node [above right]{$\beta_{56}$} (Complaints)
+  (Complaints) edge[thick] node [left]{$\beta_{67}$}(Loyalty)
+  ;
+  \begin{pgfonlayer}{background}
+        \node [background,
+                    fit=(Expectation)(Quality)(Image) (Complaints),
+                    %label=above left:Structural Model:
+                    ]{};
+  \end{pgfonlayer}
+\end{tikzpicture}
+
+  \caption{Causality model describing causes and consequences of customer satisfaction.
+  \label{fig:ecsiStruc}}
+\end{figure}
+
+In the \emph{structural model}, also called inner model, the LVs are
+related with each other according to substantive theory. LVs are
+divided into two classes, exogenous and endogenous. Exogenous LVs do
+not have any predecessor in the structural model, all others are
+endogenous. The structural model for the ECSI model is depicted by
+Figure~\ref{fig:ecsiStruc}. The only exogenous LV in the ECSI model is
+Image. The graph can be described by an adjacency matrix $\bm{D}$  as
+displayed in Table~\ref{tab:D}.
+
+For the benefit simplicity the notation we use for the structural
+model dismisses the difference between exogenous and endogenous
+variables and we start with the compact form
+\begin{eqnarray}
+  \bm{Y} &=&  \bm{Y} \bm{B} + \bm{Z}
+\end{eqnarray}
+where $\bm{Y}$ denotes the matrix for the latent variables, both
+exogenous and endogenous. The error terms $\bm{Z}$ are assumed to be
+centred, i.e., $\E \;[\bm{Z}] = \bm{0}$. Elements of the coefficients
+matrix $\bm{B}$ are restricted to zero where the elements of the
+adjacency matrix $\bm{D}$ are zero.
+
+\begin{table}[t!]
+\small \centering
+      \begin{tabular}{lccccccc}
+        \hline
+        & Image & Expectation & Quality & Value & Satisfaction &
+        Complaints & Loyalty \\ 
+        \hline
+        Image & \textbf{1} & \textbf{1} & 0 & 0 & \textbf{1} & 0 &
+        \textbf{1} \\ 
+        Expectation & 0 & 0 & \textbf{1} & \textbf{1} & \textbf{1} & 0 & 0 \\ 
+        Quality & 0 & 0 & 0 & \textbf{1} & \textbf{1} & 0 & 0 \\ 
+        Value & 0 & 0 & 0 & 0 & \textbf{1} & 0 & 0 \\ 
+        Satisfaction & 0 & 0 & 0 & 0 & 0 & \textbf{1} & \textbf{1} \\ 
+        Complaints & 0 & 0 & 0 & 0 & 0 & 0 & \textbf{1} \\ 
+        Loyalty & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\ 
+        \hline
+      \end{tabular}
+  \caption{The table displays the adjacency matrix $\bm{D}$ for the ECSI
+    model. If the entry $d_{ij} = 1$ the LV $i$ is a predecessor of LV
+    $j$. The matrix $\bm{D}$ can always be structured as a triangular
+    matrix.
+  \label{tab:D}}
+\end{table}
+
+Formally we can write the equations for the ECSI model as follows:
+
+\begin{eqnarray*}
+  \text{Image} &=& \text{Image} + 0 \; \; \; \; \; \;\text{\em (Note: exogenous variable)}\\
+  \text{Expectation} &=& \beta_{12} \; \text{Image} + \bm{z}_{2}\\
+  \text{Quality} &=& \beta_{23}  \; \text{Expectation}  + \bm{z}_{3}\\
+  \text{Value} &=& \beta_{24} \; \text{Expectation} +  \beta_{34} \;
+  \text{Quality} + \bm{z}_{4}\\
+  \text{Satisfaction} &=& \beta_{15} \; \text{Image} + \beta_{25} \;
+  \text{Expectation} +  \; \beta_{35}\text{Quality} + \beta_{45} \;
+  \text{Value}  + \bm{z}_{5}\\ 
+  \text{Complaints} &=& \beta_{56} \; \text{Satisfaction} + \bm{z}_{6}\\
+  \text{Loyalty} &=& \beta_{17} \; \text{Image} +  \beta_{57} \;
+  \text{Satisfaction} + \beta_{67} \; \text{Complaints} + \bm{z}_{7}.
+  \label{eqn:ecsiStruc}
+\end{eqnarray*}
+
+
+\subsection{The measurement model}
+\label{sec:memo}
+
+The \emph{measurement model} or outer model relates observed
+variables (MVs) to their latent variables (LVs). Often observed
+variables are referred to as manifest variables or indicators, latent
+variables as factors.  Within the PLS framework one manifest variable
+can only be related to one LV. All manifest variables related to
+one LV are called a block. So each LV has its own block of
+observed variables. A block must contain at least one MV. The way a
+block can be related to an LV can be either reflective (see
+Figure~\ref{fig:reflective}) or formative (see
+Figure~\ref{fig:formative}).
+
+
+Without loss of generality we can make the following assumptions:
+\begin{enumerate}
+\item All MVs contained in the data matrix $\bm{X}$ are scaled to have
+  zero mean and unit variance.
+\item Each block of MVs $\bm{X}_g$ is already transformed to be
+  positively correlated for all LVs $\bm{y}_g$, $g=1, \ldots, G$.
+\end{enumerate}
+As we will see, when the PLS algorithm (Section~\ref{sec:plsalg}) is
+described, all the LVs values (factor scores) are constructed in a way
+to also have zero mean and unit variance. Table~\ref{tab:notation} in
+the appendix gives an overview of the notation used.
+
+
+\begin{description}
+\item[Reflective measurement:]
+In the \emph{reflective} way (Mode A) each block of MVs reflects its
+LV and can be written as the multivariate regression:
+\begin{eqnarray*}
+  \bm{X}_g &=& \bm{y}_g \bm{w}_g^\top + \bm{F}_g, \hspace{1cm}
+  \;\;\E\;[\bm{F}_g|\bm{y}_g]=\bm{0}.
+\end{eqnarray*}
+
+So $\bm{w}_g^\top$ can be estimated by least squares as
+\begin{eqnarray}
+  \hat{\bm{w}_g^\top} &=& (\bm{y}_g^\top \bm{y}_g)^{-1} \bm{y}_g^\top
+  \bm{X}_g    \nonumber \\
+  &=& \VAR (\bm{y}_g)^{-1} \COV (\bm{y}_g,
+  \bm{X}_g)   \nonumber \\
+  &=& \COV ( \bm{y}_g, \bm{X}_g)               \nonumber \\
+  &=& \COR ( \bm{y}_g, \bm{X}_g). \label{eqn:modeA}
+\end{eqnarray}
+Note, that the PLS algorithm (see Section~\ref{sec:plsalg}) estimates
+all the LVs $\bm{y}_g$, $g=1, \ldots, G$, as linear combination of
+their MVs under the constraint to have unit variance. At the beginning
+of this chapter we assumed all the MVs to be scaled to zero mean and
+unit variance. Consequently, the equality above is
+valid. Figure~\ref{fig:reflective} depicts a path diagram for a
+reflectively measured LV.
+
+
+%\subsubsection{Formative measurement}
+\item[Formative measurement:]
+For the \emph{formative} way (Mode B) the LV is considered to be
+formed by its MVs following a multiple regression:
+\begin{eqnarray*}
+  \bm{y}_g &=& \bm{X}_g \bm{w}_g + \bm{\delta}_g \hspace{1cm}, \;\; \E
+  \;[\bm{\delta}_g|\bm{X}_g]=\bm{0}.
+\end{eqnarray*}
+Again $\bm{w}_g$ is estimated by least squares:
+\begin{eqnarray}
+  \hat{\bm{w}_g} &=& (\bm{X}_g^\top \bm{X}_g)^{-1} \bm{X}_g^\top
+  \bm{y}_g  \nonumber \\
+  &=& \VAR (\bm{X}_g)^{-1} \COV ( \bm{X}_g, \bm{y}_g)  \nonumber \\
+  &=& \COR (\bm{X}_g)^{-1} \COR ( \bm{X}_g, \bm{y}_g). \label{eqn:modeB}
+\end{eqnarray}
+As for the reflective measurement, the equality results from the
+scaling of LVs and MVs. Let us keep in mind, that $\bm{X}_g$ is a
+matrix, when the LV $\bm{y}_g$ is measured by a block of more than one
+MV. In that case $\VAR (\bm{X}_g)$ refers to covariance
+matrix. Figure~\ref{fig:formative} depicts a path diagram for a
+formatively measured LV. E.g., \citet{Diam:2001} discuss formative
+constructs in detail. 
+\end{description}
+
+\begin{figure}[t!]
+  \begin{minipage}{0.46\textwidth}
+    \centering
+
+\begin{tikzpicture}[>=latex',join=bevel, scale=0.8]
+  \pgfsetlinewidth{1bp}
+%%
+\pgfsetcolor{black}
+  % Edge: xi -> x2
+  \draw [->] (99bp,36bp) .. controls (99bp,47bp) and (99bp,61bp)  .. (99bp,84bp);
+  \draw (120bp,60bp) node {$w_{2}$};
+  % Edge: xi -> x3
+  \draw [->] (118bp,31bp) .. controls (127bp,37bp) and (137bp,45bp)  .. (145bp,54bp) .. controls (150bp,60bp) and (154bp,68bp)  .. (163bp,84bp);
+  \draw (172bp,60bp) node {$w_{3}$};
+  % Edge: xi -> x1
+  \draw [->] (80bp,31bp) .. controls (71bp,37bp) and (61bp,45bp)  .. (54bp,54bp) .. controls (49bp,60bp) and (44bp,68bp)  .. (36bp,84bp);
+  \draw (74bp,60bp) node {$w_{1}$};
+  % Node: x2
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (126bp,120bp) -- (72bp,120bp) -- (72bp,84bp) -- (126bp,84bp) -- cycle;
+  \draw (99bp,102bp) node {$\bm{x}_2$};
+\end{scope}
+  % Node: x3
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (198bp,120bp) -- (144bp,120bp) -- (144bp,84bp) -- (198bp,84bp) -- cycle;
+  \draw (171bp,102bp) node {$\bm{x}_3$};
+\end{scope}
+  % Node: x1
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (54bp,120bp) -- (0bp,120bp) -- (0bp,84bp) -- (54bp,84bp) -- cycle;
+  \draw (27bp,102bp) node {$\bm{x}_1$};
+\end{scope}
+  % Node: xi
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (99bp,18bp) ellipse (27bp and 18bp);
+  \draw (99bp,18bp) node {$\bm{y}_g$};
+\end{scope}
+%
+\end{tikzpicture}
+
+    \caption{The latent
+      variable $\bm{y}_g$ is measured by the block $\bm{X}_g$
+      consisting of  three observed variables, $\bm{x}_1, \ldots,
+      \bm{x}_3$, in a reflective way (mode A).
+    \label{fig:reflective}}
+  \end{minipage}\hfill
+  \begin{minipage}{0.46\textwidth}
+    \centering
+
+\begin{tikzpicture}[>=latex',join=bevel, scale=0.8]
+  \pgfsetlinewidth{1bp}
+%%
+\pgfsetcolor{black}
+  % Edge: X_3 -> \xi
+  \draw [->] (163bp,84bp) .. controls (159bp,74bp) and (152bp,63bp)  .. (145bp,54bp) .. controls (140bp,48bp) and (133bp,42bp)  .. (119bp,31bp);
+  \draw (174bp,60bp) node {$w_{3}$};
+  % Edge: X_1 -> \xi
+  \draw [->] (35bp,84bp) .. controls (40bp,74bp) and (47bp,63bp)  .. (54bp,54bp) .. controls (59bp,48bp) and (65bp,42bp)  .. (79bp,31bp);
+  \draw (74bp,60bp) node {$w_{1}$};
+  % Edge: X_2 -> \xi
+  \draw [->] (99bp,84bp) .. controls (99bp,73bp) and (99bp,59bp)  .. (99bp,36bp);
+  \draw (120bp,60bp) node {$w_{2}$};
+  % Node: X_2
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (126bp,120bp) -- (72bp,120bp) -- (72bp,84bp) -- (126bp,84bp) -- cycle;
+  \draw (99bp,102bp) node {$\bm{x}_2$};
+\end{scope}
+  % Node: X_3
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (198bp,120bp) -- (144bp,120bp) -- (144bp,84bp) -- (198bp,84bp) -- cycle;
+  \draw (171bp,102bp) node {$\bm{x}_3$};
+\end{scope}
+  % Node: \xi
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (99bp,18bp) ellipse (27bp and 18bp);
+  \draw (99bp,18bp) node {$\bm{y}_g$};
+  %% neu dazu: Armin
+  %\draw (99bp, 0bp) node{$\delta_g$};
+\end{scope}
+  % Node: X_1
+\begin{scope}
+  \pgfsetstrokecolor{black}
+  \draw (54bp,120bp) -- (0bp,120bp) -- (0bp,84bp) -- (54bp,84bp) -- cycle;
+  \draw (27bp,102bp) node {$\bm{x}_1$};
+\end{scope}
+%
+\end{tikzpicture}
+
+    \caption{The latent
+      variable $\bm{y}_g$ is measured by the block $\bm{X}_g$
+      consisting of three observed variables, $\bm{x}_1, \ldots,
+      \bm{x}_3$, in a formative way (mode B).
+    \label{fig:formative}}
+  \end{minipage}
+\end{figure}
+
+When all latents in a model are measured reflectively, it is called a
+reflective model. If all of them are measured formatively, the model
+is formative. A mixture of both measurement modes is referred to as
+MIMIC \citep{Ten:2005} or multi-block model \citep{Chin:1998}.
+
+\begin{table}[t!]
+\small \centering
+      \begin{tabular}{lccccccc}
+        \hline
+        & Image & Expectation & Quality & Value & Satisfaction &
+        Complaints & Loyalty \\ 
+        \hline
+        IMAG1 & \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        IMAG2 & \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        IMAG3 & \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        IMAG4 & \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\         
+        IMAG5 & \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        CUEX1 & \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        CUEX2 & \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        CUEX3 & \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}\\ 
+        PERQ1 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ2 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ3 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ4 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ5 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ6 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERQ7 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textbf{1} & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERV1 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        PERV2 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textbf{1} & \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        CUSA1 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        CUSA2 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        CUSA3 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} &
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}\\ 
+        CUSCO & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textbf{1} & \textcolor{lightgray}{0}\\ 
+        CUSL1 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} \\ 
+        CUSL2 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} \\ 
+        CUSL3 & \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}&
+        \textcolor{lightgray}{0}& \textcolor{lightgray}{0}& \textbf{1} \\ 
+        \hline
+      \end{tabular}
+  \caption{The
+    table shows the adjacency matrix $\bm{M}$ for the measurement
+    model. If the entry $m_{kg} = 1$ the MV $k$ is one of the
+    indicators of the LV $g$. The zeros are shaded out to better
+    perceive the block structure.
+  \label{tab:ecsiM}}
+\end{table}
+
+Let $\kappa_g=\{k \in \{1, \ldots, K\} \;|\; \bm{x}_k \sim \bm{y}_g\}$
+be a set of indices for MVs related to LV $\bm{y}_g$ then
+$\bm{w}_{g}$, $g=1, \ldots, g$,  is a column vector of length
+$|\kappa_g|$. We can write down the matrix of outer weights $\bm{W}$
+as
+\begin{eqnarray*}
+  \bm{W} = 
+  \begin{pmatrix}
+    \bm{w}_{1} & \bm{0}     & \bm{0}  & \cdots  &  \bm{0}\\
+    \bm{0}     & \bm{w}_{2} & \bm{0}  & \ddots  &  \vdots \\
+    \bm{0}     & \ddots     & \ddots  & \ddots  & \vdots \\
+    \vdots    & \ddots    & \ddots  & \ddots  & \bm{0}\\
+    \bm{0}     & \bm{0}     & \cdots  & \bm{0}  & \bm{w}_{G}
+  \end{pmatrix}.
+  \label{eqn:W}
+\end{eqnarray*}
+Table~\ref{tab:ecsiM} depicts the adjacency matrix $\bm{M}$ for the
+ECSI model. It has the same structure as the matrix of outer weights
+$\bm{W}$ and it is used for the initialization, as we will see, when
+the PLS algorithm (Section~\ref{sec:plsalg}) is described. If the
+entry $m_{kg} = 1$, MV $\bm{x}_k$ is one of indicators
+of~LV~$\bm{y}_g$. The MVs \texttt{CUEX1} , \texttt{CUEX2} and
+\texttt{CUEX3} for example are indicators of the LV
+\texttt{Expectation}. Note, that the matrix $\bm{M}$ includes no
+information about the direction. So it does not tell us anything about
+the measurement mode of the blocks.
+
+\subsection{The partial least squares (PLS) algorithm}
+\label{sec:plsalg}
+
+\begin{figure}[b!]
+  \centering
+  \includegraphics[width=0.95\textwidth, trim=0 0 0 20, clip]{sempls-alg-flowchart.pdf}
+  \caption{The diagram depicts the flowchart for the
+    PLS algorithm.
+  \label{fig:plsalgorithm}}
+\end{figure}
+
+Now let us have a look at the partial least squares (PLS) algorithm
+\citetext{\citealp{Wold:1982}; \citealp{Loh:1989}}. The PLS algorithm
+aims at estimating the values for LVs (factor scores) by an iterative
+procedure. Figure~\ref{fig:plsalgorithm} depicts the flowchart of the
+algorithm. The idea is to first construct each LV by the sum of its
+MVs. Then in the inner approximation we try to reconstruct each LV by
+means of its neighbouring LVs. In the outer approximation we try to
+find the best linear combination to express each LV by means of its
+MVs; the coefficients are referred to as outer weights. Finally, in
+step 4, each LV is constructed as weighted sum or linear combination
+of its MVs. After each step the LVs are scaled to have zero mean and
+unit variance. The algorithm stops if the relative change for all the
+outer weights is smaller than a predefined tolerance.
+\begin{description}
+\item[Step 1 (initialization):] \label{sec:step1}We are constructing
+  each LV as a weighted sum of their MVs. Remember that we are
+  assuming all the MVs, $\bm{X}_1, \ldots, \bm{X}_K$, to be scaled
+  ($\text{mean}(\bm{X}_i)=0$ and $\VAR(\bm{X}_i)=1$). We have already
+  seen the matrix $\bm{M}$ for the ECSI model (Table~\ref{tab:ecsiM}). In the initialization all the weights equal
+  one. As a sum of centred variables all the LVs are also centred
+  ($\text{mean}=0$). But we still have to scale them to have unit
+  variance ($\text{var}=1$).
+  \begin{eqnarray}
+    \hat{\bm{Y}}&=& \bm{X} \bm{M}  \\
+    \hat{\bm{y}}_g&=&
+    \frac{\hat{\bm{y}}_g}{\sqrt{\VAR(\hat{\bm{y}}_g)}},
+    \hspace{1cm}g=1, \ldots, G
+  \end{eqnarray}
+  The LVs are initialized as: $\hat{\bm{Y}}=(\hat{\bm{y}}_1, \ldots,
+  \hat{\bm{y}}_G)$.
+
+
+\item[Step 2 (inner approximation):] \label{sec:step2} In the inner
+  approximation we estimate each LV as a weighted sum of its
+  neighbouring LVs. The weighting depends on the used scheme (see
+  Section~\ref{sec:weisch}). Again we are scaling the recomputed LVs
+  to have unit variance.
+  \begin{eqnarray}
+    \tilde{\bm{Y}} &=& \hat{\bm{Y}} \bm{E} \nonumber \\
+    \tilde{\bm{y}}_g&=&
+    \frac{\tilde{\bm{y}}_g}{\sqrt{\VAR(\tilde{\bm{y}}_g)}},
+    \hspace{1cm}g=1, \ldots, G
+  \end{eqnarray}
+  We obtain the inner estimation: $\tilde{\bm{Y}}=(\tilde{\bm{y}}_1,
+  \ldots, \tilde{\bm{y}}_G)$.
+
+
+\item[Step 3 (outer approximation):] \label{sec:step3} For the
+  initialization all weights were one, now we are recalculating the
+  weights on the basis of the LV values from the inner approximation
+  (\hyperref[sec:step2]{Step 2}). According to the measurement mode
+  (see Section~\ref{sec:memo}) of the LV in focus, the weights can be
+  estimated as,
+
+  \begin{description}
+  \item[Mode A] a multivariate regression coefficient with the block
+    of MVs as response and the LV as regressor:
+    \begin{eqnarray}
+      \hat{\bm{w}}_g^\top &=& (\tilde{\bm{y}}_g^\top
+      \tilde{\bm{y}}_g)^{-1} \tilde{\bm{y}}_g^\top \bm{X}_g \nonumber
+      \\
+      &=& \COR(\tilde{\bm{y}}_g, \bm{X}_g),
+    \end{eqnarray}
+
+  \item[Mode B] or a multiple regression coefficient with the LV as
+    response and its block of MVs as regressors:
+    \begin{eqnarray}
+      \hat{\bm{w}}_g &=& (\bm{X}_g^\top \bm{X}_g)^{-1} \bm{X}_g^t
+      \tilde{\bm{y}}_{g} \nonumber \\
+      &=& \VAR(\bm{X}_g)^{-1} \COR(\bm{X}_g, \tilde{\bm{y}}_{g})
+    \end{eqnarray}
+  \end{description}
+
+\item[Step 4:] \label{sec:step4} In Section~\ref{sec:memo} we have
+  seen how to arrange the outer weights vectors, $\bm{w}_1, \ldots,
+  \bm{w}_G$, in an outer weights matrix $\bm{W}$, which we are using
+  now to estimate the factor scores by means of the MVs:
+  \begin{eqnarray}
+    \hat{\bm{Y}}&=& \bm{X} \bm{W}\\
+    \hat{\bm{Y}}_g&=&
+    \frac{\hat{\bm{Y}}_g}{\sqrt{\VAR(\hat{\bm{Y}}_g)}},
+    \hspace{1cm}g=1, \ldots, G,
+  \end{eqnarray}
+  resulting in the outer estimation: $\hat{\bm{Y}}=(\hat{\bm{y}}_1,
+  \ldots, \hat{\bm{y}}_G)$.
+
+\item[Step 5:] \label{sec:step5} If the relative change of all the
+  outer weights from one iteration to the next are smaller than a
+  predefined tolerance,
+  \begin{eqnarray}
+    \left|\frac{\hat{w}^{old}_{kg} -
+        \hat{w}^{new}_{kg}}{\hat{w}^{new}_{kg}}\right| &<&
+    \mbox{tolerance} \hspace{1cm}\forall \;\; k=1, \dots, K \;\;
+    \wedge \;\; g=1, \ldots, G,
+  \end{eqnarray}
+  the estimation of factor scores done in Step 4 is taken to be
+  final. Otherwise go back to Step 2.
+
+\end{description}
+
+
+\subsubsection{Weighting schemes}
+\label{sec:weisch}
+
+The weighting scheme is used for the estimation of the inner
+weights in Step~2~(\ref{sec:step2}) of the PLS
+algorithm. Originally \citet{Wold:1982} proposed the centroid
+weighting scheme. Later \citet{Loh:1989} introduced two other schemes,
+factorial and path weighting. Table~\ref{tab:D} shows the adjacency
+matrix $\bm{D}$ for the LVs in the ECSI model. This matrix is
+representing the structural part of the model we have already seen in
+Figure~\ref{fig:ecsiStruc}. Contrary to the matrix $\bm{M}$ for the
+measurement model, $\bm{D}$ accounts for the directionality. For every
+$d_{ij}=1$, there is an arc from node $i$, the head of the arc, to
+node $j$, the tail of the arc. We could also say, the columns indicate
+the successor, whereas the rows indicate the predecessors. As we will
+see, the adjacency matrix $\bm{D}$ facilitates the calculation of the
+inner weights. For all the weighting schemes, each LV is constructed
+as a weighted sum of the LVs it is \textit{related} with. The
+weighting schemes differ in the way the \textit{relation} is
+defined. Generally we can express the inner estimate $\tilde{\bm{Y}}$
+as matrix product of the outer estimate $\hat{\bm{Y}}$ and the matrix
+of inner weights $\bm{E}$:
+\begin{eqnarray}
+\tilde{\bm{Y}} &=& \hat{\bm{Y}} \bm{E}.
+\end{eqnarray}
+Furthermore let us denote $\bm{R}=\COR(\hat{\bm{Y}})$, the empirical
+correlation matrix for the LVs resulting from the outer estimation,
+and $\bm{C}=\bm{D}+\bm{D}^\top$ a symmetrical matrix indicating
+whether two LVs are neighbours.
+\begin{description}
+\item[Centroid weighting scheme:]
+  \label{sec:centroid}
+  Following the centroid weighting scheme, the matrix of inner weights
+  $\bm{E}$ takes the form
+  \begin{eqnarray}
+    e_{ij} &=& \left\{
+      \begin{array}{ll}
+        \text{sign}\;(r_{ij}) & \text{, for } c_{ij}=1, \\
+        0                    & \text{, else}
+      \end{array}
+    \right. \hspace{1cm},\; i,j=1, \ldots, G.
+  \end{eqnarray}
+
+\item[Factorial weighting scheme:]
+  \label{sec:factorial}
+  The factorial weighting scheme,
+  \begin{eqnarray}
+    e_{ij} &=& \left\{
+      \begin{array}{ll}
+        r_{ij} & \text{, for } c_{ij}=1, \\
+        0     & \text{, else}
+      \end{array}
+    \right. \hspace{1cm},\; i,j=1, \ldots, G, %\wedge
+  \end{eqnarray}
+  is quite similar to the centroid weighting scheme, except for the sign
+  of the correlation between two neighbouring LVs, the correlation is
+  used directly. This might be quite reasonable, when there are pairs of
+  neighbouring LVs with correlations close to zero.
+
+\item[Path weighting scheme:]
+  \label{sec:patwei}
+  For the path weighting scheme (or structural scheme) the predecessors
+  and successor of a LV play a different role in the \textit{relation}. 
+  Let us define the out-neighbourhood, or successor set of a node $i$ as
+  the set of tails of arcs going from~$i$. Likewise, an
+  in-neighbourhood, or predecessor set of a node $i$ is the set of heads
+  of arcs going into~$i$. A head is representing the start/initial node
+  of an arch, a tail its end/terminal node.
+
+  The \textit{relation} for one specific LV $\bm{y}_i$ with its
+  successor is determined by their correlation, for the predecessors it
+  is determined by a multiple regression
+  \begin{eqnarray*}
+    \bm{y}_i = \bm{y}_i^{pred}\bm{\gamma} + \bm{z}_i \hspace{1cm}, \E
+    \;[\bm{z}_i]=0, \hspace{0.5cm} i=1, \ldots, G 
+  \end{eqnarray*}
+  with $\bm{y}_i^{pred}$ the predecessor set of the LV
+  $\bm{y}_i$. Denoting $\bm{y}_i^{succ}$ the successor set of the LV
+  $\bm{y}_i$ the elements of the inner weight matrix $\bm{E}$ are
+  \begin{eqnarray}
+    e_{ij} &=& \left\{
+      \begin{array}{ll}
+        \gamma_{j}                  & \text{, for } j \in \bm{y}_i^{pred} ,\\
+        \COR(\bm{y}_{i},\bm{y}_{j}) & \text{, for } j \in \bm{y}_i^{succ} ,\\
+        0                           & \text{, else}.
+      \end{array}
+    \right.
+  \end{eqnarray}
+\end{description}
+
+
+\subsection{Calculation of path coefficients,  total effects and loadings}
+\label{sec:pCetc}
+Once the factor scores are estimated by PLS algorithm, the
+\emph{path coefficients} can be estimated by ordinary least squares
+(OLS), according to the structural model (Section~\ref{sec:strucmod}). For
+each  LV $\hat{\bm{y}}_g$, $g=1, \ldots, G$, the path coefficient is
+the regression coefficient on its predecessor set
+$\hat{\bm{y}}_g^{pred}$:
+\begin{eqnarray}
+  \hat{\bm{\beta}}_g  &=& (\hat{\bm{y}}_g^{pred}\, ^\top \,
+  \hat{\bm{y}}_g^{pred})^{-1} \hat{\bm{y}}_g^{pred}\, ^\top \,
+  \hat{\bm{y}}_g \nonumber \\ 
+  &=& \COR(\hat{\bm{y}}_g^{pred}, \hat{\bm{y}}_g^{pred})^{-1}
+  \COR(\hat{\bm{y}}_g^{pred}, \hat{\bm{y}}_g)
+\end{eqnarray}
+We obtain the elements $\hat{b}_{ij}$, $i,j = 1, \ldots, G$, of the
+estimated matrix of path coefficients $\hat{\bm{B}}$: 
+\begin{eqnarray}
+  \hat{\beta}_{ij} &=& \left\{
+    \begin{array}{ll}
+      \hat{\bm{\beta}}_{g_j} & \text{, for } j \in \bm{y}_i^{pred} , \\
+      0                     & \text{, else}.
+    \end{array}
+  \right.
+\end{eqnarray}
+The matrix $\hat{\bm{B}}$ can be interpreted as transition matrix for
+the structural model. We can calculate the matrix of \emph{total
+  effects} $\hat{\bm{T}}$ as the sum of the $1$ to $G$ step transition
+matrices:
+\begin{eqnarray}
+  \hat{\bm{T}} &=& \sum_{g=1}^{G}{\hat{\bm{B}}^g}.
+\end{eqnarray}
+Note, that $\hat{\bm{B}}^g$ expands to $
+\overbrace{\hat{\bm{B}}\; \cdot\;
+  \hat{\bm{B}}\; \cdot\; \ldots\;  \cdot\;
+  \hat{\bm{B}}}^{g\text{-times}}$, e.g., $\hat{\bm{B}}^2$ contains all
+the indirect effects mediated by only one LV. The \emph{cross} and
+\emph{outer loadings} are estimated as:
+\begin{eqnarray}
+  \hat{\bm{\Lambda}}^{cross} &=& \COR (\bm{X}, \hat{\bm{Y}})\\
+  % \end{eqnarray}
+  % \begin{eqnarray}
+  \hat{\bm{\lambda}}^{outer}_{kg} &=& \left\{
+    \begin{array}{ll}
+      \hat{\bm{\lambda}}^{cross}_{kg} & \text{, if } m_{kg}=1 , \\
+      0                            & \text{, else}.
+    \end{array}
+  \right.
+\end{eqnarray}
+Remember, $\bm{M}$ is the adjacency matrix for the measurement
+model. Table~\ref{tab:ecsiM} shows the respective matrix for the ECSI
+model.
+
+
+
+%\SweaveInput{./chapters/sempls.Rnw}
+\section[Getting started: how to fit a model with sempls()]{Getting 
+  started: how to fit a model with \code{sempls()}}
+\label{sec:sempls}
+For illustration, we continue with the ECSI model introduced in the
+previous Section. The first step, of course, is to attach the
+\pkg{semPLS} package.
+@
+<<label=semPLS>>=
+library("semPLS")
+@
+
+@
+Starting from scratch we have to create two so-called
+from-to-matrices that are used for constructing the adjacency matrix
+$\bm{D}$ of the structural model, the other for the adjacency matrix
+$\bm{M}$ of the measurement model. A from-to-matrix is a two column
+matrix with each row representing a directed edge in a graph. The
+first column of a row contains the name of the node where the tail of
+an arrow starts, the second must contain the name of the node where
+the head of the arrow is connected. For the ECSI model the according
+matrices are already pre-built, so we just have to load them. The
+matrices \code{ECSIsm} and \code{ECSImm} represent structural and
+measurement model.
+<<label=ECSI>>=
+data("ECSIsm")
+ECSIsm
+data("ECSImm")
+ECSImm
+@ 
+
+@
+As mentioned before, all LVs of the ECSI model are measured
+reflectively, thus the MVs of a block are all found in the second
+column. In a graph arrows would be drawn from \code{Expectation} to
+\code{CUEX1}, \code{CUEX2} and \code{CUEX3}, etc..
+<<label=ECSImm>>=
+ECSImm[ECSImm[, 1] == "Expectation", ]
+@ 
+
+@ 
+If Expectation would have formative measurements, first and second
+column of the matrix must be swapped.
+<<label=ECSImm>>=
+ECSImm[ECSImm[ , 1] == "Expectation", 2:1]
+@ %def 
+
+@
+The last prerequisite we need before we can finally setup our model is
+a dataset containing the MVs. In our example we use the \code{mobi}
+dataset which is included in the package.
+<<label=mobi>>=
+data("mobi")
+@ 
+
+Now we use \code{plsm} function to create an object suited for use
+with the fitting function \code{sempls}. The method needs the
+arguments 
+
+\begin{description}
+\item[\code{data}] the name of the dataset containing the observed variables,
+\item[\code{strucmod}] a from-to-matrix representing the structural model and
+\item[\code{measuremod}]  a from-to-matrix representing the measurement model.
+\end{description}
+
+Matrices as shown above can be created by \code{matrix()}. For
+convenience one can use a spreadsheet to quickly enter the
+from-to-matrices by setting \code{interactive=TRUE}. For reproducibility
+reasons the corresponding \proglang{R} expression is printed and should be
+saved. Alternatively csv-files can be used to specify structural and
+measurement models, see the example section in
+\code{help("plsm")}. Furthermore models already specified in SmartPLS
+\citep{SmartPLS:2005}, see Section~\ref{sec:smartpls}, can be imported.
+@  
+<<label=plsm>>=
+ECSI <- plsm(data = mobi, strucmod = ECSIsm, measuremod = ECSImm)
+@ %def 
+
+@ 
+Objects of class \code{plsm} provide a structure such that the block
+structure of the data can be reflected, see Figure~\ref{fig:mvpairs}.
+<<label=mvpairs>>=
+mvpairs(model = ECSI, data = mobi, LVs = "Expectation")
+@ %def 
+
+\begin{figure}[t!]
+\centering
+\setkeys{Gin}{width=0.95\textwidth}
+@ 
+<<label=mvpairsfig, fig=true, echo=false>>=
+<<mvpairs>>
+@ %def 
+\caption{The pairs plot for LV Expectation reveals association
+structures for its block of MVs, CUEX1, CUEX2 and CUEX3. In the lower
+triagonal the scatterplots of the jittered observations including a
+linear regression line are plotted against each other. The diagonal
+elements contain univariate barcharts of the MVs. The upper triagonal
+shows pairwise Bravais-Pearson correlation coefficients and the
+percentage of pairwise complete observations.}
+\label{fig:mvpairs}
+\end{figure}
+
+@
+Once the model is setup by \code{plsm}, model parameters can be
+estimated by the \code{sempls} function. By specifying the argument
+\code{wscheme="centroid"}, the centroid weighting scheme is used for
+the inner estimation, for other weighting schemes consult the help page
+of \code{sempls}. The \code{print} method for \code{sempls} objects
+assures that only the estimates of special interest, path
+coefficients and loadings (weights in case of formative measures), are
+printed. Additional values of the \code{sempls} object can be accessed
+either explicitly or with specific getter methods.
+<<label=sempls>>=
+ecsi <- sempls(model = ECSI, data = mobi, wscheme = "centroid")
+@ %def 
+
+
+@ 
+For graphical representation of the results, \code{pathDiagram()}
+creates a graph in the \proglang{DOT} Language
+\citep{Gansner:2006}. If Graphviz \citep{Graphviz} is available on the
+system, the \proglang{DOT} code can be directly rendered to a graphics
+format such as \proglang{PDF} (vector graphic) or \proglang{PNG}
+(bitmap) or various others. By specifying \code{edge.labels = "both"},
+names of the parameters and values are both printed. By setting
+\code{full = FALSE}, only the structural model is processed. As
+Graphviz uses internal rendering algorithms for the layout of the
+graph, this function is especially useful for models with a large
+number variables. Note, that for people unfamiliar with Graphviz some
+aspects of the resulting path diagram may be hard to change. 
+<<label=ecsi-structure, eval=false, fig=false>>=
+### Note, for rendering the path diagram graphviz (www.graphviz.org)
+### must be available.
+pathDiagram(ecsi, file = "ecsi-structure", full = FALSE, edge.labels =
+  "both", output.type = "graphics", digits = 2, graphics.fmt = "pdf")
+@ %def 
+
+% Figure~\ref{fig:ecsiFull} depicts the resulting \proglang{PDF} file.
+Figure~\ref{fig:ecsiStructure} depicts the resulting \proglang{PDF}
+file. 
+
+\begin{figure}[t!]
+\centering
+  \includegraphics[width=\textwidth, trim=35 35 35 35, clip]{ecsi-structure}
+\caption[path diagram]{A path diagram for the structural part of the
+  fitted ECSI model can be created with pathDiagram().}
+\label{fig:ecsiStructure}
+\end{figure}
+
+\vspace{-1ex}
+@ 
+<<label=ecsi>>=
+ecsi
+@ %def 
+
+@
+Values returned by \code{sempls}:
+<<label=names>>=
+names(ecsi)
+@ %def 
+%
+Since there is no well identified global optimisation criterion for
+PLS path models, each part of the model needs to be validated. For
+this task several indices are known from literature, see e.g.,
+\citet[p.~172--176]{Ten:2005} or
+\citet[p.~56--62]{Esp:2010}. Table~\ref{tab:modelvalid} lists the
+model criteria currently implemented in \pkg{semPLS}.
+%
+\begin{table}[t!]
+  \centering
+  \begin{tabular}{p{0.15\textwidth}p{0.79\textwidth}}
+    \hline
+    \textbf{Function} & \textbf{Model criteria} \\
+    \hline
+    \code{rSquared()} & coefficients of determination, $R^2$ values, for each
+    endogenous LV\\
+    \code{qSquared()} &  Stone-Geisser's  $Q^2$ for assessment of predictive
+    relevance\\
+    \code{dgrho()} & Dillon-Goldstein's rho, also referred to as
+    composite reliability\\
+    \code{communality()} & communality indices for reflectively measured LVs
+    with more than one~MV \\
+    \code{redundancy()} & redundancy indices for endogenous LVs\\
+    \code{gof()} & GoF index (geometric mean of average communality and average
+    determination coefficient)\\
+    \hline
+  \end{tabular}
+  \caption{A list of criteria for model validation which are already
+    available in the semPLS package.}
+  \label{tab:modelvalid}
+\end{table}
+
+@ 
+Path coefficients and total effects are extracted by \code{pathCoeff}
+and \code{totalEffects}. As we see in the example \code{dimnames} can
+be abbreviated.
+<<label=pathCoeff>>=
+pC <- pathCoeff(ecsi)
+print(pC, abbreviate = TRUE, minlength = 3)
+@ %def 
+
+@ 
+<<label=totalEffects>>=
+tE <- totalEffects(ecsi)
+print(tE, abbreviate = TRUE, minlength = 3)
+@ %def 
+
+@ 
+Outer weights are extracted by \code{plsWeights}.
+<<label=plsWeights>>=
+plsWeights(ecsi)
+@ %def 
+
+@ 
+Loadings are extracted by \code{plsLoadings}. Since loadings can be
+used to check for discriminant validity, the default for the
+\code{print} method of \code{plsLoadings} objects is to print numeric
+values only for the row maxima and loading relatively close to
+them. The MV \code{IMAG2} for example loads relatively high on the LVs
+\code{Image} and \code{Quality}. To print outer or cross loadings, the
+\code{print} method has to be called explicitly with its \code{type}
+argument specified. Another argument, \code{reldiff}, can be used to
+check for discriminant validity. The default is $0.2$, which means that
+all crossloadings bigger than $(1-0.2)$ times the maximum crossloading
+for a MV are printed.
+<<label=plsLoadings, eval=true>>=
+plsLoadings(ecsi)
+@ %def 
+
+@
+By calling \code{plot} on a \code{sempls} object, a plot of the
+evolution of outer weights until convergence for all blocks of MVs is
+created. Figure~\ref{fig:plotsempls} depicts the result of \code{plot(ecsi)},
+using \pkg{lattice} \citep{lattice}.
+
+Kernel density estimates can provide hints on the adequacy of the
+model, see Figure~\ref{fig:densresid}.
+<<label=densresid, echo=true>>=
+densityplot(ecsi, use = "residuals")
+@ %def 
+
+\begin{figure}[p!]
+\centering
+\setkeys{Gin}{width=0.75\textwidth}
+<<label=plotsemplsfig, fig=true, echo=false>>=
+plot(ecsi)
+@ %def
+\caption[Evolution of outer weights]{The plot depicts the evolution of
+  outer weights until convergence.}
+\label{fig:plotsempls}
+\setkeys{Gin}{width=0.6\textwidth}
+<<label=densresidfig, fig=true, echo=false>>=
+<<densresid>>
+@ %def 
+\caption[residuals  density estimates]{The plot depicts kernel density
+  estimates of the residuals of estimated endogenous LVs.} 
+\label{fig:densresid}
+\end{figure}
+
+
+
+% \SweaveInput{./chapters/bootsempls.Rnw}
+\section[Bootstrapping sempls objects]{Bootstrapping \code{sempls} 
+  objects}
+\label{sec:bootsempls}
+
+@
+% loading prepared data
+<<label=loadecsiboot, echo=false, keep.source=true>>=
+## load 'ecsiBoot.rda'
+ptf_ecsiBoot <- system.file("semPLS-intro", "data", "ecsiBoot.rda",
+  package = "semPLS")
+load(ptf_ecsiBoot)
+## load 'ecsiBootsummary.rda'
+ptf_ecsiBootsummary <- system.file("semPLS-intro", "data", "ecsiBootsummary.rda",
+  package = "semPLS")
+load(ptf_ecsiBootsummary)
+@ %def
+
+@
+Finally we can bootstrap the estimations for outer loadings and path
+coefficients, leveraging the \pkg{boot} package \citep{boot,
+Davison:1997}. The \code{summary} method also calculates confidence
+intervals based on the percentile method. We use $500$ bootstrap
+samples and we use ones to initialise the outer weights. For the outer
+loading \code{lam_6_1} no confidence interval can be computed, because
+it relates the LV \code{Complaints} to its only MV \code{CUSCO}, which
+is always estimated as $1$.
+<<label=bootprep, eval=false>>=
+## do not run every time for speed reasons
+set.seed(123)
+ecsiBoot <- bootsempls(ecsi, nboot = 500, start = "ones", verbose = FALSE)
+ecsiBoot
+@ %def
+
+<<label=bootprep, echo=false>>=
+ecsiBoot
+@ %def
+
+@ 
+<<label=bootsummaryprep, eval=false>>=
+## do not run every time for speed reasons
+ecsiBootsummary <- summary(ecsiBoot, type = "bca", level = 0.90)
+ecsiBootsummary
+@ %def 
+
+@ 
+<<label=bootsummary, echo=false>>=
+ecsiBootsummary
+@ %def 
+%
+\begin{figure}[t!]
+\centering
+\setkeys{Gin}{width=0.9\textwidth}
+<<label=bootdensityprint, fig=true, echo=false>>=
+print(densityplot(ecsiBoot, pattern = "beta"))
+@ %def 
+%\includegraphics{semPLS-bootdensity}
+\caption{The figure depicts the bootstrap distribution of the path 
+  coefficients based on 500 resamples.}
+\label{fig:bootdensity}
+\end{figure}
+%
+@
+The results of the bootstrap samples for the path coefficients can be
+visualised by plotting kernel density estimates
+(Figure~\ref{fig:bootdensity}) and parallel coordinates
+(Figure~\ref{fig:bootparallel}).
+<<label=bootplots, eval=false, echo=true, keep.source=true>>=
+densityplot(ecsiBoot, pattern = "beta")
+parallelplot(ecsiBoot, pattern = "beta", reflinesAt = c(0, 0.5),
+       alpha = 0.3, type = "bca", 
+       main = "Path Coefficients\nof 500 bootstrap samples")
+@ %def 
+
+\begin{figure}[t!]
+\centering
+\includegraphics[width=0.7\textwidth]{semPLS-bootparallel.png}
+\caption{The figure depicts parallel coordinates for the path
+  coefficients of 500 bootstrap samples (solid light-gray lines), the
+  sample path coefficients (solid dark-red line), 90\% bootstrap bca
+  confidence intervals (dashed dark-red lines) and two reference lines at
+  0 and 0.5 (dotted black lines).}
+\label{fig:bootparallel}
+\end{figure}
+
+
+% \SweaveInput{./chapters/misc.Rnw}
+\section[The plsm class: importing, manipulating, exporting]{The
+  \code{plsm} class: importing, manipulating, exporting}
+\label{sec:smartpls}
+\label{sec:misc}
+
+
+\subsection{Manipulating an existing model}
+Once we are working with a model, we might want to add or remove a
+path, bring in or take out variables, both LVs and MVs, or even to
+invert the measurement model from reflective to formative and vice
+versa. The \pkg{semPLS} package provides a list of methods to perform
+those tasks. All of them are found in \code{help("plsmUtils")}.  With
+\code{plsmEdit} the from-to-matrices for structural and measurement
+model can be edited in a spreadsheet. When the spreadsheets are saved,
+the method checks whether the model is still valid. Valid
+means all MVs are available in the data, names of MVs and LVs are not
+allowed to coincide. All MVs of a block must be in the same column,
+this is because a block of MVs can either belong to a reflective or
+formative LV. And the structural model must be recursive -- an acyclic
+graph.
+
+To better understand models of class \code{plsm}, we will check for
+changes made by the utility methods in the respective elements of
+the \code{plsm} object. We continue with the \code{ECSI} model and
+invert the measurement model of the LV \code{Expectation}. This does
+not result in changes in the \emph{adjacency} matrix $M$,
+\code{ECSI[["M"]]}, as it does not include the direction. The measurement
+model is coded in the element \code{ECSI[["blocks"]]}, a list with
+elements named by the LVs and character vectors naming the MVs as
+elements. Each Element has an attribute \code{"mode"} with supported
+values \code{"A"}, reflective, and \code{"B"}, formative.
+
+@ 
+<<label=invertLVs>>=
+ECSI[["blocks"]]["Expectation"]
+invertLVs(model = ECSI, LVs = c("Expectation"))[["blocks"]]["Expectation"]
+@ %def 
+
+@ 
+Now we want to add a path from \code{Quality} to \code{Loyalty}.
+<<label=addPath>>=
+ECSI[["D"]]
+addPath(model = ECSI, from = "Quality", to = "Loyalty")[["D"]]
+@ %def 
+
+@ 
+Two paths can be removed simultaneously. The same applies to adding paths.
+<<label=removePath>>=
+removePath(model = ECSI, from = "Image", to = c("Satisfaction", 
+      "Loyalty"))[["D"]]
+@ %def 
+
+
+\subsection[Exporting plsm objects for use with sem]{Exporting 
+  \code{plsm} objects for use with \pkg{sem} }
+
+If we are interested in a covariance based estimation of the path
+coefficients, we can for example use the \pkg{sem} package
+\citep{sem}. We convert the model \code{ECSI} to a model
+representation, \code{semmod}, as used by the fitting method
+\code{sem}. For the scaling, we fix the LVs variances and the first
+loadings of an LVs instrument to one --- thus comparing loadings of
+the two approaches is not fair. So we focus only on the estimated path
+coefficients. Though not necessary in this example, the
+variances for the MVs are fixed to one, too.
+@ 
+<<label=sem1, eval=false, keep.source=true>>=
+library("matrixcalc", pos = which(search()=="package:semPLS") + 1)
+library("sem", pos = which(search()=="package:semPLS") + 1)
+semmodECSI <- plsm2sem(model = ECSI, 
+     fixedLoad = c(names(mobi)[grep("1", names(mobi))], "CUSCO"),
+     fixedVarMV=TRUE, fixedVarLV=TRUE)
+ecsiSEM <- sem(model = semmodECSI, S = cor(mobi), N = nrow(mobi))
+betaIndx <- grep("beta*", names(ecsiSEM$coeff))
+cbind(ecsi$coefficients[names(ecsiSEM$coeff)[betaIndx], ], 
+     CBSEM = ecsiSEM$coeff[betaIndx])
+@ %def 
+<<label=sem2, echo=false, eval=true>>=
+library("matrixcalc", pos = which(search()=="package:semPLS") + 1)
+library("sem", pos = which(search()=="package:semPLS") + 1)
+### For some reason 'plsm2sem' does not work in combination with Sweave.
+### However, using the prompt chunk 'sem1' can be evaluated.
+ptf <- system.file("semPLS-intro", "data", "semmodECSI.txt",
+                   package = "semPLS")
+semmodECSI <- specifyModel(file = ptf)
+ecsiSEM <- sem(model = semmodECSI, S = cor(mobi), N = nrow(mobi))
+betaIndx <- grep("beta*", names(ecsiSEM$coeff))
+cbind(ecsi$coefficients[names(ecsiSEM$coeff)[betaIndx], ], 
+      CBSEM = ecsiSEM$coeff[betaIndx])
+@ %def 
+<<label=sem2, eval=false, echo=false>>=
+detach(package:sem)
+@ %def 
+
+
+\subsection{Importing model specification created with SmartPLS}
+
+The ECSI model, including the data for the mobile phone industry, is
+shipped with SmartPLS. After loading the project file
+\code{ecsi.splsp}, a directory \code{ecsi} is created, which contains
+the \proglang{XML} representation of the model, \code{ECSI.splsm} and
+the data file \code{mobi\us 250.txt}. The mentioned directory is
+located in the SmartPLS workspace. We can use the method
+\code{read.splsm} to create a \code{splsm} object in R. The argument
+\code{order="generic"} ensures to arrange the structural model
+according to the causal chain it implies. The data file is read as
+usual by \code{read.table()}.
+
+The \pkg{semPLS} contains a SmartPLS workspace in the \code{/inst}
+directory. This workspace contains the SmartPLS model description
+\code{ECSI\us Tenenhaus.splsm}. To get the system path to the file, use
+\code{system.file()}. We can see, all returned values with identical
+names to the result from \code(plsm) are equal. The \code{splsm}
+object is inheriting from class \code{plsm} and contains some SmartPLS
+specific additional values, e.g., node descriptions and positions of
+the graphical representation of the model. For now, these additional
+values are not used by \pkg{semPLS}.
+
+@ 
+<<label=read.splsm>>=
+ptf <- system.file("SmartPLS", "workspace", "ecsi", "ECSI_Tenenhaus.splsm",
+      package = "semPLS")
+ECSIimported <- read.splsm(file=ptf, order = "generic")
+for(i in names(ECSI)) print(all.equal(ECSI[i], ECSIimported[i]))
+@ %def 
+
+
+% \input{./chapters/outlook.tex}
+\section{Summary and outlook}
+\label{sec:outlook}
+
+In this article, we have described some of the basic features of the
+\pkg{semPLS} package for working with PLS path models in
+\proglang{R}. While illustrating the usage of the different functions
+for model specification, model fitting, bootstrapping and computation
+of quality indices, we have focused at showing the modularity of the
+package. Due to this modularity the \pkg{semPLS} package can be
+extended easily.
+
+As we have demonstrated, a variety of graphical tools support the
+researcher in exploring their model data. Parallel coordinates of
+bootstrap coefficients can be useful to detect unobserved
+heterogeneity. With the help of \code{mvpairs} plots, ceiling or floor effects
+and dubious observations are spotted quickly. By means of plots for
+the evolution of outer weights, convergence problems can be discovered.
+
+Currently the \pkg{semPLS} does not support moderating effects in an
+object oriented way, though they can be specified manually. The
+\code{plpm} class will be extended to also support moderating
+effects. Further development plans are
+
+\begin{itemize}
+\item to enhance visualization methods by making them more dynamic and
+  better accessible by the user, e.g., to add grouping variables post-hoc,
+\item to integrate a simulator function to draw samples from
+  hypothetical models, thus opening the door to large scale Monte
+  Carlo experiments, and
+\item to develop new methods for dealing with unobserved heterogeneity.
+\end{itemize}
+
+
+\section*{Computational details}
+<<sessionInfo,echo=false,results=hide>>=
+SI <- sessionInfo()
+pkgs <- paste(sapply(c(SI$otherPkgs, SI$loadedOnly), function(x) 
+                     paste("\\\\pkg{", x$Package, "} ", 
+                           x$Version, sep = "")), collapse = ", ")
+@ 
+
+With exception of the path diagrams, all computations and graphics in this
+paper have been done using \proglang{R} version \Sexpr{getRversion()}
+with the packages \Sexpr{pkgs}. 
+The path diagrams have been rendered with \pkg{dot - Graphviz} version
+2.20.2 (Tue Mar 2 21:46:26 UTC 2010).
+
+
+\bibliography{./semPLS-intro}
+
+\newpage
+% \input{./chapters/appendix}
+\begin{appendix}
+\section{Notation}
+
+\vspace*{-0.15cm}
+
+%%%%%%%%%%%%%%%%%%%%   Notation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{p{0.19\textwidth}p{0.75\textwidth}}
+  \hline
+
+  $N$ & number of observations\\
+
+  $K$ & number of observed variables\\
+
+  $G$ & number of latent variables\\
+
+  $\bm{X}$ &  $N$ x $K$ matrix of observed variables (MVs); each 
+  variable standardized\\
+
+  $\bm{X}_g, \; g=1, \ldots, G$ & block of observed variables (MVs)
+  belonging to latent $\bm{y}_g$\\
+
+  $\bm{F}_g$ & $N$ x $K$ matrix measurement error for reflective
+  block $\bm{X}_g$\\ 
+
+  $\bm{\delta}_g$ & measurement error vector of length $N$ for a formative LV $\bm{y}_g$ \\
+
+  $\bm{Y}$ & $N$ x $G$ matrix of for the latent variables (LVs)\\
+
+  $\bm{Z}$ & $N$ x $G$ matrix of the structural model error terms\\
+
+  $\tilde{\bm{Y}}$& $N$ x $G$ matrix: inner
+  approximation/estimation of factor scores\\
+
+
+  $\hat{\bm{Y}}$& $N$ x $G$ matrix: outer approximation/estimation
+  of factor scores\\
+
+  $\bm{M}$ & adjacency matrix ($K$ x $G$) for the measurement model\\
+
+  $\bm{D}$ & adjacency matrix ($G$ x $G$) for the structural model\\
+
+  $\bm{W}$ & $K$ x $G$ matrix of outer weights\\
+
+  $\bm{E}$ & $G$ x $G$ matrix of inner weights\\
+
+  $\bm{B} $ & $G$ x $G$ matrix of path coefficients\\
+
+  $\bm{T}$ & $G$ x $G$ matrix of the total effects\\
+
+  $\bm{\Lambda}^{cross}$ & $K$ x $G$ matrix of cross loadings\\
+
+  $\bm{\Lambda}^{outer}$ & $K$ x $G$ matrix of outer loadings\\
+
+  \hline    
+  \end{tabular}
+  \caption{Notation used.}
+  \label{tab:notation}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{appendix}
+
+\vspace*{-0.6cm}
+
+\end{document}

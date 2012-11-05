@@ -1,3 +1,16 @@
+Changes in semPLS version 1.0-9
+
+ o Added a slighltly modified version of the JSS paper publication
+   about semPLS as vignette. 
+
+ o Renamed Author@R to Authors@R in DESCRIPTION file.
+
+ o Fixed bug in rSquared2(). The corrected R-squared was erroneously
+   correcting for an intercept as well.
+
+ o Fixed bugs in gof(), print.communality(), print.rSquared2(). The
+   divisor for the averages was wrong.
+
 Changes in semPLS version 1.0-8
 
  o added references for JSS publication 'semPLS: Structural Equation

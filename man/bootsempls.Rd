@@ -190,10 +190,6 @@ bootsempls(object, nboot=200, start=c("ones", "old"), method=
   }
 }
 
-\author{
-Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
-}
-
 \seealso{
   \code{\link[boot]{boot}}, \code{\link[sem]{boot.sem}}
 }
@@ -202,13 +198,10 @@ Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
   Tenenhaus, M., V. E. Vinzi, Y.-M. Chatelin, and C. Lauro (2005)
   PLS path modeling. Computational Statistics & Data Analysis 48,
   159-205.
-  
-  Armin Monecke and Friedrich Leisch (2012). semPLS: Structural Equation
-  Modeling Using Partial Least Squares. Journal of Statistical Software,
-  48(3), 1-32., URL \url{http://jstatsoft.org/v48/i03/}.
 }
 
 \examples{
+\dontrun{
 data(ECSImobi)
 ecsi <- sempls(model=ECSImobi, data=mobi)
 
@@ -232,4 +225,5 @@ parallelplot(ecsiBoot, pattern="lam")
 # only inspecting the outer loadings for Loyalty
 parallelplot(ecsiBoot, pattern="lam7", type="perc", level=0.90,
          main="Loyalty\n 200 bootstrapped outer loadings")
+}
 }

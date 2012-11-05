@@ -68,16 +68,7 @@ pathDiagram(object, \ldots)
   Gansner, E., E. Koutsofios, and S. North (2006)
   Drawing graphs with \emph{dot}.
   \url{http://www.graphviz.org/Documentation/dotguide.pdf}.
-
-  Armin Monecke and Friedrich Leisch (2012). semPLS: Structural Equation
-  Modeling Using Partial Least Squares. Journal of Statistical Software,
-  48(3), 1-32., URL \url{http://jstatsoft.org/v48/i03/}.
 }
-
-\author{
-  Armin Monecke \email{armin.monecke@stat.uni-muenchen.de}
-}
-
 
 \seealso{
   \code{\link{sempls}}, \code{\link{rSquared}}

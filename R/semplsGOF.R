@@ -69,7 +69,7 @@ print.communality <- function(x, na.print=".", digits=2, ...){
   xChar <- format(as.data.frame(x), digits=digits, ...)
   xChar[is.na(x)] <- na.print
   print(xChar, ...)
-  aveCom <- sum(x[,2], na.rm=TRUE)^-1 * sum(x[,1] * x[,2], na.rm=TRUE)
+  aveCom <- sum(x[!is.na(x[,1] ),2], na.rm=TRUE)^-1 * sum(x[,1] * x[,2], na.rm=TRUE)
   cat(paste("\n\tAverage communality:", signif(aveCom, digits=digits), "\n"))
   invisible(x) 
 }
@@ -89,7 +89,8 @@ redundancy.sempls <- function(object, ...){
 
 print.redundancy <- function(x, na.print=".", digits=2, ...){
   print.table(x, na.print=na.print, digits=digits, ...)
-  aveRed <- nrow(x)^-1 * sum(x[,1], na.rm=TRUE)
+  ## aveRed <- nrow(x)^-1 * sum(x[,1], na.rm=TRUE)
+  aveRed <- mean(x[,1], na.rm=TRUE)
   cat(paste("\n\tAverage redundancy:", signif(aveRed, digits=digits), "\n"))
   invisible(x)
 }
@@ -107,8 +108,10 @@ rSquared2.sempls <- function(object, na.rm=FALSE, ...){
   R_squared <- cbind(R_squared, NA,colSums(object$model$D))
   colnames(R_squared) <- c("R-squared", "R-squared-corrected", "predecessors")
   R_squared[R_squared[,"predecessors"]==0, "R-squared"] <- NA
-  # correction
-  correct <- function(rSqrd, J, N) {rSqrd - J*(1-rSqrd)/(N-J-1)}
+  ## correction
+  ## correct <- function(rSqrd, J, N) {rSqrd - J*(1-rSqrd)/(N-J-1)}
+  ## Fixed(2012-09-21): since there is no intercept, see summary.lm()
+  correct <- function(rSqrd, J, N) {rSqrd - J*(1-rSqrd)/(N-J)}
   N <- object$N
   J <- R_squared[, "predecessors"]
   R_squared[, "R-squared-corrected"] <- correct(R_squared[, "R-squared"], J, N)
@@ -118,11 +121,14 @@ rSquared2.sempls <- function(object, na.rm=FALSE, ...){
 }
 
 print.rSquared2 <- function(x, na.print=".", digits=2, ...){
-  #xChar <- format(as.data.frame(unclass(x)), digits=digits, ...)
+  ## xChar <- format(as.data.frame(unclass(x)), digits=digits, ...)
   xChar <- format(as.data.frame(x), digits=digits, ...)
   xChar[is.na(x)] <- na.print
   print(xChar)
-  aveRsquared <- nrow(x)^-1 * sum(x[,1], na.rm=TRUE)
+  ## aveRsquared <- nrow(x)^-1 * sum(x[,1], na.rm=TRUE)
+  ## see: PLS-Handbook, p. 58 (... where J is the total number of
+  ## endogenous latent variables in the model.) 
+  aveRsquared <- mean(x[,1], na.rm=TRUE)
   cat(paste("\n\tAverage R-squared:", signif(aveRsquared, digits=digits), "\n"))
   invisible(x)
 }
@@ -135,9 +141,11 @@ gof <- function(object, ...){
 # requires: rSquared, communality
 gof.sempls <- function(object, ...){
     rSq <- rSquared(object)
-    aveRsq <- nrow(rSq)^-1 * sum(rSq[,1], na.rm=TRUE)
+    ## aveRsq <- nrow(rSq)^-1 * sum(rSq[,1], na.rm=TRUE)
+    aveRsq <- mean(rSq[,1], na.rm=TRUE)
     com <- communality(object)
-    aveCom <- sum(com[,2], na.rm=TRUE)^-1 * sum(com[,1] * com[,2], na.rm=TRUE)
+    aveCom <- sum(com[!is.na(com[,1]), 2], na.rm=TRUE)^-1 *
+      sum(com[,1] * com[,2], na.rm=TRUE)
     gof <- sqrt(aveCom * aveRsq)
     gof <- matrix(c(aveRsq, aveCom, gof), nrow=3, ncol=1)
     rownames(gof) <- c("Average R-squared", "Average Communality", "GoF")

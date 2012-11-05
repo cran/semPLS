@@ -16,5 +16,10 @@ function(data, outerW, model, pairwise){
   # the attributes for the scale are meaningless
   # No, they are meaningfull: w'Sw=1
   #attributes(Latent)[c(3,4)] <- NULL
+  
+  ## Alternatively: without scaling in each iteration
+  # else {Latent <- scale(as.matrix(data) %*% outerW, center = TRUE, scale = FALSE)
+  #     attr(Latent, "scaled:scale") <- 1}
+  
   return(Latent)
 }
