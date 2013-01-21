@@ -1,6 +1,7 @@
 \documentclass[nojss]{jss}
 
 \usepackage{amsmath,amstext,bm,tabularx,multirow,longtable,thumbpdf}
+\usepackage[english]{babel}
 \usepackage{tikz}
 \usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,snakes,shapes}
 
@@ -1466,7 +1467,8 @@ library("sem", pos = which(search()=="package:semPLS") + 1)
 ptf <- system.file("semPLS-intro", "data", "semmodECSI.txt",
                    package = "semPLS")
 semmodECSI <- specifyModel(file = ptf)
-ecsiSEM <- sem(model = semmodECSI, S = cor(mobi), N = nrow(mobi))
+ecsiSEM <- sem(model = semmodECSI, S = cor(mobi), N = nrow(mobi),
+               start.fn = startvalues2)
 betaIndx <- grep("beta*", names(ecsiSEM$coeff))
 cbind(ecsi$coefficients[names(ecsiSEM$coeff)[betaIndx], ], 
       CBSEM = ecsiSEM$coeff[betaIndx])
@@ -1559,7 +1561,7 @@ The path diagrams have been rendered with \pkg{dot - Graphviz} version
 
 \bibliography{./semPLS-intro}
 
-\newpage
+\clearpage
 % \input{./chapters/appendix}
 \begin{appendix}
 \section{Notation}

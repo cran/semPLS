@@ -1,6 +1,6 @@
-ca28eef54c258b0a7d3bb5939a181b0d *DESCRIPTION
+f4d211015eeb8db1a029dfe22f47e23a *DESCRIPTION
 78d2fcb7c8bdb545dbb9975b9bfcdd8d *NAMESPACE
-aa610b24c6d81a035b72724be2b679b4 *NEWS
+57c6ca9043425bcee4732ef8ff908d09 *NEWS
 57c7c261ba2551c8209135d15a7b8e5d *R/block.R
 5281d8d09cb2208bfae595b04e4779ba *R/bootsempls.R
 e0a3d5143067bdc868bb7e7f6bda11fd *R/centroid.R
@@ -49,8 +49,8 @@ c1754d5940414e1725a5f329ef9aec78 *inst/CITATION
 9967fc8dc560b18b7e62cf60608e9b02 *inst/ECSImeasuremod.csv
 c5d03a291822ba72018b17e82c1f6988 *inst/ECSIstrucmod.csv
 c61c8db04f93220ed6431f82f86118b3 *inst/SmartPLS/workspace/ecsi/ECSI_Tenenhaus.splsm
-d689cb46dec6b56edc533f1b2d9579ce *inst/doc/semPLS-intro.Rnw
-5875c1b04aedea42e7900d0991ac54c3 *inst/doc/semPLS-intro.pdf
+852353deb6385b2e54a7af76f3b67eed *inst/doc/semPLS-intro.Rnw
+3c595ebe44e535ed705a9ad09efed984 *inst/doc/semPLS-intro.pdf
 c5f0d882e195d7f738374595e12681ef *inst/semPLS-intro/data/ecsiBoot.rda
 31f55a049e0a61889bf091dc8143ddc0 *inst/semPLS-intro/data/ecsiBootsummary.rda
 6a449aa8cd4e62754d7420ba20005eda *inst/semPLS-intro/data/semmodECSI.txt
@@ -88,5 +88,5 @@ efcee52e116f1987b84611eb63586c55 *tests/regtest_ConstructLevelChanges.R
 93e3a3a49e4c78f73dc03515c59d6bbd *vignettes/graphics/ecsi-structure.pdf
 0e6ff4c420ba95700223740f98830108 *vignettes/graphics/semPLS-bootparallel.png
 278879b2a4dee0751e84a7f24c9469a3 *vignettes/graphics/sempls-alg-flowchart.pdf
-d689cb46dec6b56edc533f1b2d9579ce *vignettes/semPLS-intro.Rnw
+852353deb6385b2e54a7af76f3b67eed *vignettes/semPLS-intro.Rnw
 0036f01cfe2e6c3fe4f2e96f4d7ecde8 *vignettes/semPLS-intro.bib

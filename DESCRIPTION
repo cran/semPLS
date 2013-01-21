@@ -1,8 +1,8 @@
 Package: semPLS
 Type: Package
 Title: Structural Equation Modeling Using Partial Least Squares
-Version: 1.0-9
-Date: 2012-11-05
+Version: 1.0-10
+Date: 2013-01-21
 Authors@R: c(person("Armin", "Monecke", role=c("aut", "cph","cre"),
         email="armin.monecke@stat.uni-muenchen.de"),
         person("Friedrich", "Leisch", role=c("aut", "ths")))
@@ -16,6 +16,6 @@ License: GPL-2
 Depends: lattice (>= 0.20-5)
 Suggests: XML, boot, sem, matrixcalc
 LazyLoad: yes
-Packaged: 2012-11-05 19:51:45 UTC; agraf
+Packaged: 2013-01-20 23:19:00 UTC; agraf
 Repository: CRAN
-Date/Publication: 2012-11-06 06:57:53
+Date/Publication: 2013-01-21 15:09:52
